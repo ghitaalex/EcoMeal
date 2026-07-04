@@ -12,5 +12,6 @@ namespace EcoMeal.Api.Entities
         [ForeignKey(nameof(BusinessType))]
         public int BusinessTypeId { get; set; }
         public required BusinessType BusinessType { get; set; }
+        public ICollection<Package> Packages { get; set; } = new List<Package>(); 
     }
 }
