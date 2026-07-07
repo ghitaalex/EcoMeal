@@ -4,6 +4,10 @@
     flex-direction: column;
 }
 
+::deep .search-bar .mud-input-slot {
+    padding-top: 8px !important;
+}
+
 main {
     flex: 1;
 }
