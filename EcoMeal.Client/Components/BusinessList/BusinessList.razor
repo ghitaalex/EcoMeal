@@ -7,7 +7,7 @@
 }
 else {
     <div class="row g-3">
-    @foreach(BusinessModel business in Businesses)
+    @foreach(BusinessModel business in FilteredBusinesses)
     {
         <div class="col-md-4 col-lg-3">
             <BusinessCard Business="business"/>

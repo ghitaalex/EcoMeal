@@ -10,14 +10,16 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
         <MudText Typo="Typo.h6"><span>Eco</span><span style="font-weight: bold;">Meal</span></MudText>
         <MudSpacer />
-        <MudTextField @bind-Value="_searchText" Placeholder="Search Businesses" Variant="Variant.Filled" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Margin="Margin.Dense" Class="search-bar" Style="max-width: 400px; background-color: white; border-radius: 4px;" />
+        <MudTextField @bind-Value="_searchText" Immediate="true" Placeholder="Search Businesses" Variant="Variant.Filled" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Margin="Margin.Dense" Class="search-bar" Style="max-width: 400px; background-color: white; border-radius: 4px;" />
         <MudSpacer />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
         <NavMenu />
     </MudDrawer>
     <MudMainContent Class="pa-4">
-        @Body
+        <CascadingValue Value="_searchText" Name="SearchText">
+            @Body
+        </CascadingValue>
     </MudMainContent>
 </MudLayout>
 
