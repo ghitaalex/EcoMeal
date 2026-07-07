@@ -1,8 +1,6 @@
 using EcoMeal.Client.Models;
 using EcoMeal.Client.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace EcoMeal.Client.Components.BusinessList
 {
@@ -13,6 +11,11 @@ namespace EcoMeal.Client.Components.BusinessList
         private List<BusinessModel>? Businesses { get; set; }
 
         protected override async Task OnInitializedAsync()
+        {
+            await LoadBusinesses();
+        }
+
+        private async Task LoadBusinesses()
         {
             Businesses = await BusinessService.GetAllAsync();
         }

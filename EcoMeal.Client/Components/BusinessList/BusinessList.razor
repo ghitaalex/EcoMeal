@@ -6,10 +6,12 @@
     <p>Loading... </p>
 }
 else {
+    <div class="row g-3">
     @foreach(BusinessModel business in Businesses)
     {
-        <div class="col-3">
+        <div class="col-md-4 col-lg-3">
             <BusinessCard Business="business"/>
         </div>
     }
+    </div>
 }
