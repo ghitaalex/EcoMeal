@@ -1,4 +1,5 @@
-﻿using EcoMeal.Client.Models;
+﻿using EcoMeal.Client.Components.BusinessList;
+using EcoMeal.Client.Models;
 
 namespace EcoMeal.Client.Services
 {
@@ -19,6 +20,16 @@ namespace EcoMeal.Client.Services
         {
             var response = await _http.DeleteAsync($"api/business/{id}");
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<BusinessDetailsModel> GetOneById(int id) {
+            var business = await _http.GetFromJsonAsync<BusinessDetailsModel>($"api/business/{id}");
+            return business;
+        }
+
+        public async Task AddPackageToBusiness(int businessId, PackageAddModel package)
+        {
+            await _http.PostAsJsonAsync<PackageAddModel>($"api/business/{businessId}/addPackage", package);
         }
     }
 }

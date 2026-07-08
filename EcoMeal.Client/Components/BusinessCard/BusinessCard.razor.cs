@@ -11,6 +11,8 @@ namespace EcoMeal.Client.Components.BusinessCard
 
         [Inject]
         public required BusinessService BusinessService { get; set; }
+        [Inject]
+        public required NavigationManager Navigation { get; set; }
 
         private bool _deleted;
 
@@ -22,6 +24,11 @@ namespace EcoMeal.Client.Components.BusinessCard
             {
                 _deleted = true;
             }
+        }
+
+        public void NavigateToDetails()
+        {
+            Navigation.NavigateTo($"business/{Business.Id}");
         }
     }
 }

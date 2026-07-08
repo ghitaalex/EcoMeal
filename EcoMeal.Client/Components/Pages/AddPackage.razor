@@ -1,0 +1,73 @@
+﻿@page "/business/{BusinessId:int}/addPackage"
+@using EcoMeal.Client.Models
+@using EcoMeal.Client.Services
+<MudMainContent>
+    <h2>Adauga pachet</h2>
+    <EditForm Model="PackageAddModel" OnValidSubmit="AddPackageToBusiness">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <label class="form-label">Nume</label>
+        <InputText class="form-control mb-2" @bind-Value="PackageAddModel.Name"
+            placeholder="Adauga nume pachet"></InputText>
+        <ValidationMessage For="@(() => PackageAddModel.Name)" />
+
+        <label class="form-label">Descriere</label>
+        <InputTextArea @bind-Value="PackageAddModel.Description"
+                       placeholder="Descriere"
+                       rows="4"
+                       class="form-control mb-2" />
+
+        <label class="form-label">Pret</label>
+        <InputNumber @bind-Value="PackageAddModel.Price"
+                     placeholder="Pret"
+                     class="form-control mb-2" />
+
+        <label class="form-label">Start Pick-up</label>
+        <InputDate @bind-Value="PackageAddModel.StartPickup"
+                   Type="InputDateType.DateTimeLocal"
+                   placeholder="Start Pick-up"
+                   class="form-control mb-2" />
+
+        <label class="form-label">End Pick-up</label>
+        <InputDate @bind-Value="PackageAddModel.EndPickup"
+                   Type="InputDateType.DateTimeLocal"
+                   placeholder="End Pick-up"
+                   class="form-control mb-2" />
+
+        <label class="form-label">Tip pachet</label>
+        <InputSelect @bind-Value="PackageAddModel.PackageTypeId"
+                     class="form-control mb-2">
+            <option value="0"
+                    disabled>Alege tipul...</option>
+            @* @foreach (var packageType in PackageTypes)
+        {
+            <option value="@packageType.Id">@packageType.Name</option>
+        } *@
+        </InputSelect>
+        <button type="submit" class="btn btn-primary mt-3">Adaugă pachet</button>
+    </EditForm>
+</MudMainContent>
+
+@code {
+    [Parameter]
+    public int BusinessId { get; set; }
+
+    [Inject]
+    public required BusinessService BusinessService { get; set; }
+
+    public PackageAddModel PackageAddModel { get; set; } = new PackageAddModel()
+        {
+            Name = string.Empty,
+            Description = string.Empty,
+            Price = 0,
+            PackageTypeId = 1,
+            StartPickup = DateTime.Now,
+            EndPickup = DateTime.Now.AddHours(2)
+        };
+
+    public async Task AddPackageToBusiness()
+    {
+        await BusinessService.AddPackageToBusiness(BusinessId, PackageAddModel);
+    }
+}
