@@ -39,5 +39,63 @@ namespace EcoMeal.Api.Controllers
             }
             return NoContent();
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<BusinessDetailsDTO>> GetOneById(int id)
+        {
+            var business = await _context.Business
+                .Select(b => new BusinessDetailsDTO
+                {
+                    Id = b.Id,
+                    Name = b.Name,
+                    Address = b.Address,
+                    Description = b.Description,
+                    Contact = b.Contact,
+                    BusinessTypeName = b.BusinessType.Name,
+                })
+                .FirstOrDefaultAsync(b => b.Id == id);
+            if (business is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(business);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddBusiness([FromBody] BusinessAddDTO business)
+        {
+            _context.Business.Add(new Business
+            {
+                Name = business.Name,
+                Address = business.Address,
+                Description = business.Description,
+                Contact = business.Contact,
+                BusinessTypeId = business.BusinessTypeId,
+                BusinessType = null!
+            });
+
+            await _context.SaveChangesAsync();
+            return Created();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditBusiness(int id, [FromBody] BusinessAddDTO business)
+        {
+            var existingBusiness = await _context.Business.FirstOrDefaultAsync(b => b.Id == id);
+            if (existingBusiness == null)
+            {
+                return NotFound("Couldn't find the business");
+            }
+
+            existingBusiness.Name = business.Name;
+            existingBusiness.Address = business.Address;
+            existingBusiness.Description = business.Description;
+            existingBusiness.Contact = business.Contact;
+            existingBusiness.BusinessTypeId = business.BusinessTypeId;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
