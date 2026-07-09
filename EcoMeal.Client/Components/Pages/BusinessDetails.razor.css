@@ -1,6 +1,7 @@
 ::deep .mud-card:hover {
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(5, 150, 105, 0.15) !important;
+    transform: translateY(-3px);
+    border-color: #047857 !important;
 }
 
 .empty-state p {

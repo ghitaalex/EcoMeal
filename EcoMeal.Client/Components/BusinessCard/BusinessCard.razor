@@ -3,7 +3,7 @@
 @if (!_deleted)
 {
 <div class="business-card" @onclick="NavigateToDetails">
-    <div class="card-hero" style="@(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "background: #000;" : $"background: url('{Business.BusinessImageUrl}') center/cover no-repeat;")">
+    <div class="card-hero" style="@(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "background: linear-gradient(135deg, #0B0F19 0%, #047857 100%);" : $"background: url('{Business.BusinessImageUrl}') center/cover no-repeat;")">
         <div class="card-hero-overlay"></div>
         <div class="card-hero-content">
             <span class="business-type-badge">@Business.BusinessTypeName</span>

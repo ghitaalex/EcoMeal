@@ -48,12 +48,12 @@ namespace EcoMeal.Client.Components.BusinessList
         }
 
         private Color GetChipColor(string? type) =>
-            _selectedType == type ? Color.Dark : Color.Default;
+            _selectedType == type ? Color.Success : Color.Default;
 
         private string GetChipStyle(string? type) =>
             _selectedType == type
-                ? "background-color: black; color: white;"
-                : "background-color: white; color: black;";
+                ? "background: linear-gradient(135deg, #047857, #065F46); color: white; font-weight: 600;"
+                : "background: #141A2A; color: #34D399; border: 1.5px solid #1E3A2F; font-weight: 500;";
 
         private string GetIconForType(string type) => type.ToLowerInvariant() switch
         {
