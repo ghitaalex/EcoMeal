@@ -1,4 +1,5 @@
 ﻿using EcoMeal.Client.Models;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace EcoMeal.Client.Services
 {
@@ -28,15 +29,36 @@ namespace EcoMeal.Client.Services
             return business;
         }
 
-        public async Task AddAsync(BusinessAddModel business)
+        public async Task AddAsync(BusinessAddModel business, IBrowserFile? image = null)
         {
-            await _http.PostAsJsonAsync("api/business", business);
+            var content = CreateMultipartContent(business, image);
+            await _http.PostAsync("api/business", content);
         }
 
-        public async Task<bool> EditAsync(int id, BusinessAddModel business)
+        public async Task<bool> EditAsync(int id, BusinessAddModel business, IBrowserFile? image = null)
         {
-            var response = await _http.PutAsJsonAsync($"api/business/{id}", business);
+            var content = CreateMultipartContent(business, image);
+            var response = await _http.PutAsync($"api/business/{id}", content);
             return response.IsSuccessStatusCode;
+        }
+
+        private MultipartFormDataContent CreateMultipartContent(BusinessAddModel business, IBrowserFile? image)
+        {
+            var content = new MultipartFormDataContent();
+            content.Add(new StringContent(business.Name), "Name");
+            content.Add(new StringContent(business.Address), "Address");
+            if (business.Description is not null)
+                content.Add(new StringContent(business.Description), "Description");
+            content.Add(new StringContent(business.Contact), "Contact");
+            content.Add(new StringContent(business.BusinessTypeId.ToString()), "BusinessTypeId");
+
+            if (image is not null)
+            {
+                var stream = image.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024);
+                content.Add(new StreamContent(stream), "BusinessImage", image.Name);
+            }
+
+            return content;
         }
 
         public async Task<List<BusinessTypeModel>> GetBusinessTypes()

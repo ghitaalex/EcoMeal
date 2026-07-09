@@ -72,6 +72,15 @@
                 }
                 </MudSelect>
 
+                <MudStack Class="mb-6">
+                    <MudText Typo="Typo.body2" Style="color: #6b7280; margin-bottom: 0.5rem;">Image (optional)</MudText>
+                    <InputFile OnChange="OnImageSelected" accept=".png,.jpg,.jpeg,.webp" class="form-control" />
+                    @if (SelectedImage is not null)
+                    {
+                        <MudText Typo="Typo.caption" Style="color: #4b5563;">@SelectedImage.Name</MudText>
+                    }
+                </MudStack>
+
                 <MudStack Row="true" Spacing="3">
                     <MudButton ButtonType="ButtonType.Submit"
                                Variant="Variant.Filled"
@@ -103,6 +112,7 @@
 
     private BusinessAddModel? Model;
     private List<BusinessTypeModel>? BusinessTypes;
+    private IBrowserFile? SelectedImage;
     private bool IsLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -130,11 +140,16 @@
     {
         if (Model is null) return;
 
-        var success = await BusinessService.EditAsync(Id, Model);
+        var success = await BusinessService.EditAsync(Id, Model, SelectedImage);
         if (success)
         {
             NavigationManager.NavigateTo($"/business/{Id}");
         }
+    }
+
+    private void OnImageSelected(InputFileChangeEventArgs e)
+    {
+        SelectedImage = e.File;
     }
 
     private async Task HandleDelete()

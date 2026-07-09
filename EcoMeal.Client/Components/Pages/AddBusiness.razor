@@ -64,6 +64,15 @@
                 }
             </MudSelect>
 
+            <MudStack Class="mb-6">
+                <MudText Typo="Typo.body2" Style="color: #6b7280; margin-bottom: 0.5rem;">Image (optional)</MudText>
+                <InputFile OnChange="OnImageSelected" accept=".png,.jpg,.jpeg,.webp" class="form-control" />
+                @if (SelectedImage is not null)
+                {
+                    <MudText Typo="Typo.caption" Style="color: #4b5563;">@SelectedImage.Name</MudText>
+                }
+            </MudStack>
+
             <MudButton ButtonType="ButtonType.Submit"
                        Variant="Variant.Filled"
                        FullWidth="true"
@@ -82,6 +91,7 @@
     public required NavigationManager NavigationManager { get; set; }
 
     private List<BusinessTypeModel>? BusinessTypes;
+    private IBrowserFile? SelectedImage;
 
     private BusinessAddModel Model { get; set; } = new()
     {
@@ -98,7 +108,12 @@
 
     private async Task HandleSubmit()
     {
-        await BusinessService.AddAsync(Model);
+        await BusinessService.AddAsync(Model, SelectedImage);
         NavigationManager.NavigateTo("/");
+    }
+
+    private void OnImageSelected(InputFileChangeEventArgs e)
+    {
+        SelectedImage = e.File;
     }
 }

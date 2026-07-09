@@ -13,8 +13,10 @@
 else
 {
     <MudContainer MaxWidth="MaxWidth.Medium" Class="py-8">
-        @* Hero Card *@
-        <MudPaper Class="pa-8 rounded-xl" Style="background: #000; color: #fff;" Elevation="0">
+        <MudPaper Class="pa-8 rounded-xl" Elevation="0"
+                  Style="@($"color: #fff; background: {(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "#000" : $"url('{Business.BusinessImageUrl}') center/cover no-repeat")}; position: relative; overflow: hidden;")">
+            <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.55);"></div>
+            <div style="position: relative; z-index: 1;">
             <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Outlined" Style="color: #fff; border-color: rgba(255,255,255,0.3);">
                 @Business.BusinessTypeName
             </MudChip>
@@ -37,9 +39,9 @@ else
                     @Business.Contact
                 </MudChip>
             </MudStack>
+            </div>
         </MudPaper>
 
-        @* Packages Section *@
         <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-8 mb-4">
             <MudText Typo="Typo.h5" Style="font-weight: 700;">Available Packages</MudText>
             <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
@@ -73,6 +75,10 @@ else
                 {
                     <MudItem xs="12" sm="6" md="4">
                         <MudCard Elevation="0" Class="rounded-xl" Style="border: 1px solid #f0f0f0; height: 100%; transition: box-shadow 0.2s, transform 0.2s;">
+                            @if (!string.IsNullOrEmpty(package.PackageImageUrl))
+                            {
+                                <MudCardMedia Image="@package.PackageImageUrl" Height="140" />
+                            }
                             <MudCardContent Class="pa-5">
                                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                                     <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled"

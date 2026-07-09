@@ -16,20 +16,25 @@
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-.card-accent {
-    height: 6px;
-    background: #000000;
-}
-
-.card-content {
+.card-hero {
+    position: relative;
     padding: 1.5rem;
+    min-height: 180px;
     display: flex;
-    flex-direction: column;
-    flex: 1;
+    align-items: flex-end;
+    border-radius: 16px 16px 0 0;
 }
 
-.card-header-section {
-    margin-bottom: 0.75rem;
+.card-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 16px 16px 0 0;
+}
+
+.card-hero-content {
+    position: relative;
+    z-index: 1;
 }
 
 .business-type-badge {
@@ -40,55 +45,61 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: #f3f3f3;
-    color: #000000;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 0.5rem;
 }
 
 .business-name {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #1a1a2e;
-    margin: 0 0 0.5rem 0;
+    color: #ffffff;
+    margin: 0 0 0.25rem 0;
     line-height: 1.3;
 }
 
 .business-description {
-    font-size: 0.9rem;
-    color: #6b7280;
-    line-height: 1.5;
-    margin: 0 0 1rem 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+    margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.card-details {
-    margin-top: auto;
+.hero-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+}
+
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-chip i {
+    font-size: 0.7rem;
+}
+
+.card-content {
+    padding: 1rem 1.5rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #f0f0f0;
-}
-
-.detail-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.85rem;
-    color: #4b5563;
-}
-
-.detail-item i {
-    color: #000000;
-    font-size: 0.9rem;
-    width: 16px;
-    text-align: center;
+    flex: 1;
 }
 
 .card-package-info {
-    margin-top: 0.75rem;
     padding: 0.75rem;
     background: #f9f9f9;
     border-radius: 10px;
@@ -111,8 +122,19 @@
     font-size: 0.8rem;
 }
 
+.no-packages-text {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    margin: 0;
+    font-style: italic;
+}
+
+.no-packages-text i {
+    margin-right: 0.3rem;
+}
+
 .card-actions {
-    margin-top: 1.25rem;
+    margin-top: auto;
     padding-top: 1rem;
     border-top: 1px solid #f0f0f0;
     display: flex;

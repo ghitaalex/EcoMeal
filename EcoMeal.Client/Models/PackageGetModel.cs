@@ -9,5 +9,6 @@ namespace EcoMeal.Client.Models
         public DateTime PickUpStart { get; set; }
         public DateTime PickUpEnd { get; set; }
         public string PackageTypeName { get; set; } = "";
+        public string? PackageImageUrl { get; set; }
     }
 }

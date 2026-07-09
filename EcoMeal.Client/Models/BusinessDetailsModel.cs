@@ -8,6 +8,7 @@ namespace EcoMeal.Client.Models
         public string? Description { get; set; }
         public string Contact { get; set; } = "";
         public string BusinessTypeName { get; set; } = "";
+        public string? BusinessImageUrl { get; set; }
         public List<PackageGetModel> Packages { get; set; } = new List<PackageGetModel>();
     }
 }

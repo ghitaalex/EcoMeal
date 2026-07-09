@@ -3,26 +3,22 @@
 @if (!_deleted)
 {
 <div class="business-card" @onclick="NavigateToDetails">
-    <div class="card-accent"></div>
-    <div class="card-content">
-        <div class="card-header-section">
+    <div class="card-hero" style="@(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "background: #000;" : $"background: url('{Business.BusinessImageUrl}') center/cover no-repeat;")">
+        <div class="card-hero-overlay"></div>
+        <div class="card-hero-content">
             <span class="business-type-badge">@Business.BusinessTypeName</span>
-        </div>
-        <h5 class="business-name">@Business.Name</h5>
-        @if (!string.IsNullOrEmpty(Business.Description))
-        {
-            <p class="business-description">@Business.Description</p>
-        }
-        <div class="card-details">
-            <div class="detail-item">
-                <i class="bi bi-geo-alt-fill"></i>
-                <span>@Business.Address</span>
-            </div>
-            <div class="detail-item">
-                <i class="bi bi-envelope-fill"></i>
-                <span>@Business.Contact</span>
+            <h5 class="business-name">@Business.Name</h5>
+            @if (!string.IsNullOrEmpty(Business.Description))
+            {
+                <p class="business-description">@Business.Description</p>
+            }
+            <div class="hero-details">
+                <span class="hero-chip"><i class="bi bi-geo-alt-fill"></i> @Business.Address</span>
+                <span class="hero-chip"><i class="bi bi-envelope-fill"></i> @Business.Contact</span>
             </div>
         </div>
+    </div>
+    <div class="card-content">
         @if (_lowestPrice.HasValue)
         {
             <div class="card-package-info">
@@ -38,6 +34,10 @@
                     </div>
                 }
             </div>
+        }
+        else
+        {
+            <p class="no-packages-text"><i class="bi bi-box-seam"></i> No packages yet — check again later</p>
         }
         <div class="card-actions">
             <button type="button" class="btn-edit" @onclick="NavigateToEdit" @onclick:stopPropagation="true">
