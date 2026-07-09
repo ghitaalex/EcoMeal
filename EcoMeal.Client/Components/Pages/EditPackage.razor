@@ -1,0 +1,168 @@
+@page "/business/{BusinessId:int}/editPackage/{PackageId:int}"
+@using EcoMeal.Client.Models
+@using EcoMeal.Client.Services
+
+<PageTitle>Edit Package</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack"
+               Style="text-transform: none; color: #000; font-weight: 600; margin-bottom: 1rem;"
+               OnClick="NavigateBack">
+        Back to Business
+    </MudButton>
+
+    @if (IsLoading)
+    {
+        <MudPaper Class="pa-8 rounded-xl d-flex justify-center" Elevation="0" Style="border: 1px solid #f0f0f0;">
+            <MudProgressCircular Indeterminate="true" Color="MudBlazor.Color.Dark" />
+        </MudPaper>
+    }
+    else if (PackageEditModel is null)
+    {
+        <MudAlert Severity="Severity.Error">Package not found.</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-8 rounded-xl" Elevation="0" Style="border: 1px solid #f0f0f0;">
+            <MudText Typo="Typo.h5" Style="font-weight: 800; margin-bottom: 0.5rem;">Edit Package</MudText>
+            <MudText Typo="Typo.body2" Style="color: #6b7280; margin-bottom: 2rem;">Update the package details below.</MudText>
+
+            <EditForm Model="PackageEditModel" OnValidSubmit="SaveChanges">
+                <DataAnnotationsValidator />
+
+                <MudTextField @bind-Value="PackageEditModel.Name"
+                              Label="Package Name"
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              Required="true"
+                              RequiredError="Name is required" />
+
+                <MudTextField @bind-Value="PackageEditModel.Description"
+                              Label="Description"
+                              Variant="Variant.Outlined"
+                              Lines="3"
+                              Class="mb-4" />
+
+                <MudNumericField @bind-Value="PackageEditModel.Price"
+                                 Label="Price"
+                                 Variant="Variant.Outlined"
+                                 Adornment="Adornment.Start"
+                                 AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                                 Min="0.01"
+                                 Class="mb-4" />
+
+                <MudGrid Spacing="3" Class="mb-4">
+                    <MudItem xs="6">
+                        <label class="form-label">Pickup Start</label>
+                        <InputDate @bind-Value="PackageEditModel.StartPickup"
+                                   Type="InputDateType.DateTimeLocal"
+                                   class="form-control" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <label class="form-label">Pickup End</label>
+                        <InputDate @bind-Value="PackageEditModel.EndPickup"
+                                   Type="InputDateType.DateTimeLocal"
+                                   class="form-control" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudSelect @bind-Value="PackageEditModel.PackageTypeId"
+                           Label="Package Type"
+                           Variant="Variant.Outlined"
+                           Class="mb-6"
+                           Required="true"
+                           RequiredError="Please select a package type">
+                    @if (PackageTypes is not null)
+                    {
+                        @foreach (var type in PackageTypes)
+                        {
+                            <MudSelectItem Value="type.Id">@type.Name</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+
+                <MudStack Row="true" Spacing="3">
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Style="background: #000; color: #fff; text-transform: none; font-weight: 700; flex: 1;"
+                               Size="MudBlazor.Size.Large">
+                        Save Changes
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="MudBlazor.Color.Error"
+                               Style="text-transform: none; font-weight: 600;"
+                               Size="MudBlazor.Size.Large"
+                               OnClick="DeletePackage">
+                        Delete
+                    </MudButton>
+                </MudStack>
+            </EditForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int BusinessId { get; set; }
+
+    [Parameter]
+    public int PackageId { get; set; }
+
+    [Inject]
+    public required PackageService PackageService { get; set; }
+    [Inject]
+    public required NavigationManager NavigationManager { get; set; }
+
+    private PackageAddModel? PackageEditModel;
+    private List<PackageTypeModel>? PackageTypes;
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var packageTypesTask = PackageService.GetPackageTypes();
+        var packageTask = PackageService.GetById(BusinessId, PackageId);
+
+        PackageTypes = await packageTypesTask;
+        var existing = await packageTask;
+
+        if (existing is not null)
+        {
+            PackageEditModel = new PackageAddModel
+            {
+                Name = existing.Name,
+                Description = existing.Description ?? string.Empty,
+                Price = (double)existing.Price,
+                StartPickup = existing.PickUpStart,
+                EndPickup = existing.PickUpEnd,
+                PackageTypeId = PackageTypes?.FirstOrDefault(t => t.Name == existing.PackageTypeName)?.Id ?? 1
+            };
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task SaveChanges()
+    {
+        if (PackageEditModel is null) return;
+
+        var success = await PackageService.EditAsync(BusinessId, PackageId, PackageEditModel);
+        if (success)
+        {
+            NavigationManager.NavigateTo($"/business/{BusinessId}");
+        }
+    }
+
+    private async Task DeletePackage()
+    {
+        var success = await PackageService.DeleteAsync(BusinessId, PackageId);
+        if (success)
+        {
+            NavigationManager.NavigateTo($"/business/{BusinessId}");
+        }
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo($"/business/{BusinessId}");
+    }
+}

@@ -1,0 +1,153 @@
+@page "/business/{Id:int}/edit"
+@using EcoMeal.Client.Models
+@using EcoMeal.Client.Services
+
+<PageTitle>Edit Business</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack"
+               Style="text-transform: none; color: #000; font-weight: 600; margin-bottom: 1rem;"
+               OnClick="NavigateBack">
+        Back to Business
+    </MudButton>
+
+    @if (IsLoading)
+    {
+        <MudPaper Class="pa-8 rounded-xl d-flex justify-center" Elevation="0" Style="border: 1px solid #f0f0f0;">
+            <MudProgressCircular Indeterminate="true" Color="MudBlazor.Color.Dark" />
+        </MudPaper>
+    }
+    else if (Model is null)
+    {
+        <MudAlert Severity="Severity.Error">Business not found.</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-8 rounded-xl" Elevation="0" Style="border: 1px solid #f0f0f0;">
+            <MudText Typo="Typo.h5" Style="font-weight: 800; margin-bottom: 0.5rem;">Edit Business</MudText>
+            <MudText Typo="Typo.body2" Style="color: #6b7280; margin-bottom: 2rem;">Update the business details below.</MudText>
+
+            <EditForm Model="Model" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+
+                <MudTextField @bind-Value="Model.Name"
+                              Label="Business Name"
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              Required="true"
+                              RequiredError="Name is required" />
+
+                <MudTextField @bind-Value="Model.Address"
+                              Label="Address"
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              Required="true"
+                              RequiredError="Address is required" />
+
+                <MudTextField @bind-Value="Model.Description"
+                              Label="Description"
+                              Variant="Variant.Outlined"
+                              Lines="3"
+                              Class="mb-4" />
+
+                <MudTextField @bind-Value="Model.Contact"
+                              Label="Contact"
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              Required="true"
+                              RequiredError="Contact is required" />
+
+                <MudSelect @bind-Value="Model.BusinessTypeId"
+                           Label="Business Type"
+                           Variant="Variant.Outlined"
+                           Class="mb-6"
+                           Required="true"
+                           RequiredError="Please select a business type">
+                @if (BusinessTypes is not null)
+                {
+                    @foreach (var type in BusinessTypes)
+                    {
+                        <MudSelectItem Value="type.Id">@type.Name</MudSelectItem>
+                    }
+                }
+                </MudSelect>
+
+                <MudStack Row="true" Spacing="3">
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Style="background: #000; color: #fff; text-transform: none; font-weight: 700; flex: 1;"
+                               Size="MudBlazor.Size.Large">
+                        Save Changes
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="MudBlazor.Color.Error"
+                               Style="text-transform: none; font-weight: 600;"
+                               Size="MudBlazor.Size.Large"
+                               OnClick="HandleDelete">
+                        Delete
+                    </MudButton>
+                </MudStack>
+            </EditForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [Inject]
+    public required BusinessService BusinessService { get; set; }
+    [Inject]
+    public required NavigationManager NavigationManager { get; set; }
+
+    private BusinessAddModel? Model;
+    private List<BusinessTypeModel>? BusinessTypes;
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var typesTask = BusinessService.GetBusinessTypes();
+        var existing = await BusinessService.GetOneById(Id);
+        BusinessTypes = await typesTask;
+
+        if (existing is not null)
+        {
+            Model = new BusinessAddModel
+            {
+                Name = existing.Name,
+                Address = existing.Address,
+                Description = existing.Description,
+                Contact = existing.Contact,
+                BusinessTypeId = BusinessTypes?.FirstOrDefault(t => t.Name == existing.BusinessTypeName)?.Id ?? 1
+            };
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (Model is null) return;
+
+        var success = await BusinessService.EditAsync(Id, Model);
+        if (success)
+        {
+            NavigationManager.NavigateTo($"/business/{Id}");
+        }
+    }
+
+    private async Task HandleDelete()
+    {
+        var success = await BusinessService.DeleteAsync(Id);
+        if (success)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo($"/business/{Id}");
+    }
+}

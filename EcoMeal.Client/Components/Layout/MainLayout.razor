@@ -8,7 +8,7 @@
 <MudLayout>
     <MudAppBar Elevation="6" Fixed="true" Style="background-color: white; color: black;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
-        <MudText Typo="Typo.h6"><span>Eco</span><span style="font-weight: bold;">Meal</span></MudText>
+        <MudButton Href="/" Variant="Variant.Text" Style="text-transform: none; color: black; font-size: 1.25rem;"><span>Eco</span><span style="font-weight: bold;">Meal</span></MudButton>
         <MudSpacer />
         <MudTextField @bind-Value="_searchText" Immediate="true" Placeholder="Search Businesses" Variant="Variant.Filled" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Margin="Margin.Dense" Class="search-bar" Style="max-width: 400px; background-color: white; border-radius: 4px;" />
         <MudSpacer />
@@ -16,7 +16,7 @@
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
         <NavMenu />
     </MudDrawer>
-    <MudMainContent Class="pa-4">
+    <MudMainContent Class="pa-4" Style="margin-top: 48px;">
         <CascadingValue Value="_searchText" Name="SearchText">
             @Body
         </CascadingValue>

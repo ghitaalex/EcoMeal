@@ -1,73 +1,121 @@
 ﻿@page "/business/{BusinessId:int}/addPackage"
 @using EcoMeal.Client.Models
 @using EcoMeal.Client.Services
-<MudMainContent>
-    <h2>Adauga pachet</h2>
-    <EditForm Model="PackageAddModel" OnValidSubmit="AddPackageToBusiness">
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
 
-        <label class="form-label">Nume</label>
-        <InputText class="form-control mb-2" @bind-Value="PackageAddModel.Name"
-            placeholder="Adauga nume pachet"></InputText>
-        <ValidationMessage For="@(() => PackageAddModel.Name)" />
+<PageTitle>Add Package</PageTitle>
 
-        <label class="form-label">Descriere</label>
-        <InputTextArea @bind-Value="PackageAddModel.Description"
-                       placeholder="Descriere"
-                       rows="4"
-                       class="form-control mb-2" />
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+    <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack"
+               Style="text-transform: none; color: #000; font-weight: 600; margin-bottom: 1rem;"
+               OnClick="NavigateBack">
+        Back to Business
+    </MudButton>
 
-        <label class="form-label">Pret</label>
-        <InputNumber @bind-Value="PackageAddModel.Price"
-                     placeholder="Pret"
-                     class="form-control mb-2" />
+    <MudPaper Class="pa-8 rounded-xl" Elevation="0" Style="border: 1px solid #f0f0f0;">
+        <MudText Typo="Typo.h5" Style="font-weight: 800; margin-bottom: 0.5rem;">Add Package</MudText>
+        <MudText Typo="Typo.body2" Style="color: #6b7280; margin-bottom: 2rem;">Create a new surprise package for customers to pick up.</MudText>
 
-        <label class="form-label">Start Pick-up</label>
-        <InputDate @bind-Value="PackageAddModel.StartPickup"
-                   Type="InputDateType.DateTimeLocal"
-                   placeholder="Start Pick-up"
-                   class="form-control mb-2" />
+        <EditForm Model="PackageAddModel" OnValidSubmit="AddPackageToBusiness">
+            <DataAnnotationsValidator />
 
-        <label class="form-label">End Pick-up</label>
-        <InputDate @bind-Value="PackageAddModel.EndPickup"
-                   Type="InputDateType.DateTimeLocal"
-                   placeholder="End Pick-up"
-                   class="form-control mb-2" />
+            <MudTextField @bind-Value="PackageAddModel.Name"
+                          Label="Package Name"
+                          Placeholder="e.g. Mystery Bakery Box"
+                          Variant="Variant.Outlined"
+                          Class="mb-4"
+                          Required="true"
+                          RequiredError="Name is required" />
 
-        <label class="form-label">Tip pachet</label>
-        <InputSelect @bind-Value="PackageAddModel.PackageTypeId"
-                     class="form-control mb-2">
-            <option value="0"
-                    disabled>Alege tipul...</option>
-            @* @foreach (var packageType in PackageTypes)
-        {
-            <option value="@packageType.Id">@packageType.Name</option>
-        } *@
-        </InputSelect>
-        <button type="submit" class="btn btn-primary mt-3">Adaugă pachet</button>
-    </EditForm>
-</MudMainContent>
+            <MudTextField @bind-Value="PackageAddModel.Description"
+                          Label="Description"
+                          Placeholder="Describe what the customer might expect..."
+                          Variant="Variant.Outlined"
+                          Lines="3"
+                          Class="mb-4" />
+
+            <MudNumericField @bind-Value="PackageAddModel.Price"
+                             Label="Price"
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
+                             AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                             Min="0.01"
+                             Class="mb-4" />
+
+            <MudGrid Spacing="3" Class="mb-4">
+                <MudItem xs="6">
+                    <label class="form-label">Pickup Start</label>
+                    <InputDate @bind-Value="PackageAddModel.StartPickup"
+                               Type="InputDateType.DateTimeLocal"
+                               class="form-control" />
+                </MudItem>
+                <MudItem xs="6">
+                    <label class="form-label">Pickup End</label>
+                    <InputDate @bind-Value="PackageAddModel.EndPickup"
+                               Type="InputDateType.DateTimeLocal"
+                               class="form-control" />
+                </MudItem>
+            </MudGrid>
+
+            <MudSelect @bind-Value="PackageAddModel.PackageTypeId"
+                       Label="Package Type"
+                       Variant="Variant.Outlined"
+                       Class="mb-6"
+                       Required="true"
+                       RequiredError="Please select a package type">
+                @if (PackageTypes is not null)
+                {
+                    @foreach (var type in PackageTypes)
+                    {
+                        <MudSelectItem Value="type.Id">@type.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       FullWidth="true"
+                       Style="background: #000; color: #fff; text-transform: none; font-weight: 700; font-size: 1rem; padding: 0.75rem;"
+                       Size="MudBlazor.Size.Large">
+                Create Package
+            </MudButton>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
 
 @code {
     [Parameter]
     public int BusinessId { get; set; }
 
     [Inject]
-    public required BusinessService BusinessService { get; set; }
+    public required PackageService PackageService { get; set; }
+    [Inject]
+    public required NavigationManager NavigationManager { get; set; }
+
+    private List<PackageTypeModel>? PackageTypes;
 
     public PackageAddModel PackageAddModel { get; set; } = new PackageAddModel()
-        {
-            Name = string.Empty,
-            Description = string.Empty,
-            Price = 0,
-            PackageTypeId = 1,
-            StartPickup = DateTime.Now,
-            EndPickup = DateTime.Now.AddHours(2)
-        };
+    {
+        Name = string.Empty,
+        Description = string.Empty,
+        Price = 0,
+        PackageTypeId = 1,
+        StartPickup = DateTime.Now,
+        EndPickup = DateTime.Now.AddHours(2)
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        PackageTypes = await PackageService.GetPackageTypes();
+    }
 
     public async Task AddPackageToBusiness()
     {
-        await BusinessService.AddPackageToBusiness(BusinessId, PackageAddModel);
+        await PackageService.AddAsync(BusinessId, PackageAddModel);
+        NavigationManager.NavigateTo($"/business/{BusinessId}");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo($"/business/{BusinessId}");
     }
 }
