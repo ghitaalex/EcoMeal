@@ -1,6 +1,7 @@
-﻿using EcoMeal.Api.Entities;
+using EcoMeal.Api.Entities;
 using EcoMeal.Api.Infrastructure;
 using EcoMeal.Api.Models;
+using EcoMeal.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,8 +12,11 @@ namespace EcoMeal.Api.Controllers
     public class BusinessController : ControllerBase
     {
         private readonly EcoMealDbContext _context;
-        public BusinessController(EcoMealDbContext context) {
+        private readonly BlobStorageService _blobStorageService;
+        private readonly string _containerName = "ecomeal-businesses";
+        public BusinessController(EcoMealDbContext context, BlobStorageService blobStorageService) {
             _context = context;
+            _blobStorageService = blobStorageService;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BusinessDTO>>> GetBusinesses()
@@ -24,7 +28,8 @@ namespace EcoMeal.Api.Controllers
                 Address = b.Address,
                 Description = b.Description,
                 Contact = b.Contact,
-                BusinessTypeName = b.BusinessType.Name
+                BusinessTypeName = b.BusinessType.Name,
+                BusinessImageUrl = b.BusinessImageUrl
                 }).ToListAsync();
 
             return Ok(businessesDTOs);
@@ -32,11 +37,21 @@ namespace EcoMeal.Api.Controllers
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBusinsess(int id) { 
-            int count = await _context.Business.Where(b => b.Id == id).ExecuteDeleteAsync();
+            /*int count = await _context.Business.Where(b => b.Id == id).ExecuteDeleteAsync();
             if (count == 0)
             {
                 return NotFound("Couldn't find the business");
+            }*/
+            var business = await _context.Business.FirstOrDefaultAsync(b => b.Id == id);
+            if (business == null) {
+                return NotFound("Could not find business");
             }
+            if (!(business.BusinessImageUrl == null))
+            {
+                await _blobStorageService.DeleteBlobAsync(_containerName, business.BusinessImageUrl);
+            }
+            _context.Business.Remove(business);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
@@ -52,6 +67,7 @@ namespace EcoMeal.Api.Controllers
                     Description = b.Description,
                     Contact = b.Contact,
                     BusinessTypeName = b.BusinessType.Name,
+                    BusinessImageUrl = b.BusinessImageUrl
                 })
                 .FirstOrDefaultAsync(b => b.Id == id);
             if (business is null)
@@ -63,8 +79,14 @@ namespace EcoMeal.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBusiness([FromBody] BusinessAddDTO business)
+        public async Task<IActionResult> AddBusiness([FromForm] BusinessAddDTO business)
         {
+            string? imageUrl = null;
+            if (business.BusinessImage != null)
+            {
+                imageUrl = await _blobStorageService.UploadImageAsync(_containerName, business.BusinessImage);
+            }
+
             _context.Business.Add(new Business
             {
                 Name = business.Name,
@@ -72,7 +94,8 @@ namespace EcoMeal.Api.Controllers
                 Description = business.Description,
                 Contact = business.Contact,
                 BusinessTypeId = business.BusinessTypeId,
-                BusinessType = null!
+                BusinessType = null!,
+                BusinessImageUrl = imageUrl
             });
 
             await _context.SaveChangesAsync();
@@ -80,12 +103,21 @@ namespace EcoMeal.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditBusiness(int id, [FromBody] BusinessAddDTO business)
+        public async Task<IActionResult> EditBusiness(int id, [FromForm] BusinessAddDTO business)
         {
             var existingBusiness = await _context.Business.FirstOrDefaultAsync(b => b.Id == id);
             if (existingBusiness == null)
             {
                 return NotFound("Couldn't find the business");
+            }
+
+            if (business.BusinessImage != null)
+            {
+                if (!string.IsNullOrEmpty(existingBusiness.BusinessImageUrl))
+                {
+                    await _blobStorageService.DeleteBlobAsync(_containerName, existingBusiness.BusinessImageUrl);
+                }
+                existingBusiness.BusinessImageUrl = await _blobStorageService.UploadImageAsync(_containerName, business.BusinessImage);
             }
 
             existingBusiness.Name = business.Name;

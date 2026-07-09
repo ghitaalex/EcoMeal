@@ -13,6 +13,7 @@
         public decimal Price { get; set; }
         public DateTime PickUpStart { get; set; }
         public DateTime PickUpEnd { get; set; }
+        public string? PackageImageUrl { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

@@ -10,5 +10,6 @@ namespace EcoMeal.Api.Models
         public DateTime StartPickup { get; set; }
         public DateTime EndPickup { get; set; }
         public int PackageTypeId { get; set; }
+        public IFormFile? PackageImage { get; set; }
     }
 }

@@ -8,5 +8,6 @@
         public string? Description { get; set; }
         public required string Contact { get; set; }
         public required string BusinessTypeName { get; set; }
+        public string? BusinessImageUrl { get; set; }
     }
 }
