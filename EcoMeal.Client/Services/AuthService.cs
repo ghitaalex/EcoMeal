@@ -12,6 +12,7 @@ public class AuthService
     private readonly AuthenticationStateProvider _authStateProvider;
 
     public string? Token { get; private set; }
+    public string? UserName { get; private set; }
     public bool IsAuthenticated => !string.IsNullOrEmpty(Token);
 
     public AuthService(HttpClient http, ProtectedLocalStorage localStorage, AuthenticationStateProvider authStateProvider)
@@ -76,6 +77,9 @@ public class AuthService
             var rolesResult = await _localStorage.GetAsync<List<string>>("userRoles");
             var roles = rolesResult.Success && rolesResult.Value != null ? rolesResult.Value : new List<string>();
 
+            var nameResult = await _localStorage.GetAsync<string>("userName");
+            UserName = nameResult.Success ? nameResult.Value : null;
+
             if (_authStateProvider is CustomAuthenticationStateProvider customProvider)
             {
                 customProvider.NotifyUserAuthentication(Token, roles);
@@ -86,8 +90,10 @@ public class AuthService
     public async Task LogoutAsync()
     {
         Token = null;
+        UserName = null;
         await _localStorage.DeleteAsync("authToken");
         await _localStorage.DeleteAsync("userRoles");
+        await _localStorage.DeleteAsync("userName");
 
         if (_authStateProvider is CustomAuthenticationStateProvider customProvider)
         {
@@ -106,6 +112,8 @@ public class AuthService
             if (response.IsSuccessStatusCode)
             {
                 var userMe = await response.Content.ReadFromJsonAsync<UserMeResponse>();
+                UserName = userMe?.Name;
+                await _localStorage.SetAsync("userName", UserName ?? "");
                 return userMe?.Roles ?? new List<string>();
             }
         }

@@ -44,11 +44,13 @@ else
 
         <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-8 mb-4">
             <MudText Typo="Typo.h5" Style="font-weight: 600; color: #6EE7B7;">Available Packages</MudText>
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                       Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
-                       OnClick="NavigateToAddPackage">
-                Add Package
-            </MudButton>
+            <AuthorizeView Roles="Admin">
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
+                           Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
+                           OnClick="NavigateToAddPackage">
+                    Add Package
+                </MudButton>
+            </AuthorizeView>
         </MudStack>
 
         @if (Packages is null)
@@ -61,11 +63,13 @@ else
                 <MudIcon Icon="@Icons.Material.Outlined.Inventory2" Style="font-size: 3.5rem; color: #047857;" />
                 <MudText Typo="Typo.h6" Class="mt-4" Style="color: #CBD5E1;">No packages yet</MudText>
                 <MudText Typo="Typo.body2" Class="mb-4" Style="color: #64748B;">Create your first package to get started</MudText>
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                           Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
-                           OnClick="NavigateToAddPackage">
-                    Add Package
-                </MudButton>
+                <AuthorizeView Roles="Admin">
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
+                               Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
+                               OnClick="NavigateToAddPackage">
+                        Add Package
+                    </MudButton>
+                </AuthorizeView>
             </MudPaper>
         }
         else
@@ -106,9 +110,11 @@ else
                                             @package.PickUpStart.ToString("HH:mm") – @package.PickUpEnd.ToString("HH:mm")
                                         </MudText>
                                     </MudStack>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="MudBlazor.Size.Small"
-                                                   Style="color: #6EE7B7;"
-                                                   OnClick="() => NavigateToEditPackage(package.Id)" />
+                                    <AuthorizeView Roles="Admin">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="MudBlazor.Size.Small"
+                                                       Style="color: #6EE7B7;"
+                                                       OnClick="() => NavigateToEditPackage(package.Id)" />
+                                    </AuthorizeView>
                                 </MudStack>
                             </MudCardContent>
                         </MudCard>

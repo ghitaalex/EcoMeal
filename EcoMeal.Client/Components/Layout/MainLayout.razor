@@ -28,18 +28,29 @@
             <MudSpacer />
         }
         <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" />
-        <MudIconButton Icon="@Icons.Material.Outlined.AccountCircle" Color="Color.Inherit" />
-        <div class="ms-auto">
-            @if (AuthService.IsAuthenticated)
-            {
-                <span class="me-3 text-secondary">Logged In</span>
-                <button class="btn btn-outline-danger btn-sm" @onclick="HandleLogout">Logout</button>
-            }
-            else
-            {
-                <a class="btn btn-outline-primary btn-sm" href="/login">Login</a>
-            }
-</div>
+        @if (AuthService.IsAuthenticated)
+        {
+            <MudMenu Icon="@Icons.Material.Filled.Person" Color="Color.Success" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
+                     Class="profile-menu-btn">
+                <ChildContent>
+                    <div style="padding: 1rem 1.25rem 0.75rem; text-align: center; min-width: 200px;">
+                        <MudAvatar Color="Color.Success" Size="Size.Large" Style="margin: 0 auto 0.5rem; background: linear-gradient(135deg, #059669, #34D399);">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.subtitle1" Style="color: #F1F5F9; font-weight: 600;">@(AuthService.UserName ?? "User")</MudText>
+                        <MudText Typo="Typo.caption" Style="color: #64748B;">Welcome back!</MudText>
+                    </div>
+                    <MudDivider Style="border-color: #1E3A2F;" />
+                    <MudMenuItem OnClick="HandleLogout" Icon="@Icons.Material.Outlined.Logout" IconColor="Color.Error" Style="color: #FCA5A5;">Logout</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        }
+        else
+        {
+            <MudButton Href="/login" Variant="Variant.Outlined" Color="Color.Success" Size="Size.Small" StartIcon="@Icons.Material.Outlined.Login" Style="text-transform: none;">
+                Log In
+            </MudButton>
+        }
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Style="background: #111827; border-right: 1px solid #1E3A2F;">
         <NavMenu />

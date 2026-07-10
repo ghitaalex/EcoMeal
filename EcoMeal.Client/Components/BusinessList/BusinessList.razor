@@ -14,11 +14,13 @@ else {
                 <MudChip T="string" Icon="@GetIconForType(type)" Color="@GetChipColor(type)" Variant="Variant.Filled" Style="@GetChipStyle(type)" OnClick="() => SelectFilter(type)">@type</MudChip>
             }
         </div>
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                   Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; padding: 0.5rem 1.25rem; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
-                   Href="/business/add">
-            Add Business
-        </MudButton>
+        <AuthorizeView Roles="Admin">
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
+                       Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; padding: 0.5rem 1.25rem; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
+                       Href="/business/add">
+                Add Business
+            </MudButton>
+        </AuthorizeView>
     </MudStack>
     <div class="row g-3">
     @foreach(BusinessModel business in FilteredBusinesses)

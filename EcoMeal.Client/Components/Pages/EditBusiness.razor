@@ -1,6 +1,8 @@
 @page "/business/{Id:int}/edit"
 @using EcoMeal.Client.Models
 @using EcoMeal.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Edit Business</PageTitle>
 
