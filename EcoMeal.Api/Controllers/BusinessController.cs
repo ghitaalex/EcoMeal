@@ -1,7 +1,9 @@
+using EcoMeal.Api.Constants;
 using EcoMeal.Api.Entities;
 using EcoMeal.Api.Infrastructure;
 using EcoMeal.Api.Models;
 using EcoMeal.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +11,7 @@ namespace EcoMeal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
     public class BusinessController : ControllerBase
     {
         private readonly EcoMealDbContext _context;
@@ -36,6 +39,7 @@ namespace EcoMeal.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult> DeleteBusinsess(int id) { 
             /*int count = await _context.Business.Where(b => b.Id == id).ExecuteDeleteAsync();
             if (count == 0)

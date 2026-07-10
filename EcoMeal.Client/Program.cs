@@ -1,5 +1,6 @@
 using EcoMeal.Client.Components;
 using EcoMeal.Client.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,16 +8,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddMudServices();
+
+builder.Services.AddTransient<AuthenticationHeaderHandler>();
 builder.Services.AddHttpClient("EcoMealApi", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7088/");
-});
+}).AddHttpMessageHandler<AuthenticationHeaderHandler>();
 
 builder.Services.AddScoped(sp =>
     sp.GetRequiredService<IHttpClientFactory>().CreateClient("EcoMealApi"));
 
 builder.Services.AddScoped<BusinessService>();
 builder.Services.AddScoped<PackageService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
+builder.Services.AddAuthorizationCore();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

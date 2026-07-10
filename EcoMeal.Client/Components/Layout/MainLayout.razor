@@ -1,5 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using EcoMeal.Client.Services
+@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
+@inject AuthService AuthService
 @implements IDisposable
 
 <MudThemeProvider Theme="_theme" IsDarkMode="true" />
@@ -27,6 +29,17 @@
         }
         <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" />
         <MudIconButton Icon="@Icons.Material.Outlined.AccountCircle" Color="Color.Inherit" />
+        <div class="ms-auto">
+            @if (AuthService.IsAuthenticated)
+            {
+                <span class="me-3 text-secondary">Logged In</span>
+                <button class="btn btn-outline-danger btn-sm" @onclick="HandleLogout">Logout</button>
+            }
+            else
+            {
+                <a class="btn btn-outline-primary btn-sm" href="/login">Login</a>
+            }
+</div>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Style="background: #111827; border-right: 1px solid #1E3A2F;">
         <NavMenu />
@@ -92,4 +105,19 @@
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
+    {
+        await AuthService.LoadTokenAsync();
+        StateHasChanged();
+    }
+}
+
+    private async Task HandleLogout()
+    {
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/", forceLoad: true);
+}
 }
