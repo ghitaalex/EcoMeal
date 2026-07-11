@@ -1,0 +1,20 @@
+@namespace EcoMeal.Client.Components.SearchResultCard
+
+<div class="search-result-card" @onclick="OnClick">
+    <div class="search-result-image" style="@GetImageStyle()">
+        <div class="search-result-image-fade"></div>
+    </div>
+    <div class="search-result-info">
+        <div class="search-result-header">
+            <span class="search-result-type-badge">
+                <i class="@GetIcon()"></i> @Result.Category
+            </span>
+            <span class="search-result-kind">@Result.ResultType</span>
+        </div>
+        <h6 class="search-result-name">@Result.Name</h6>
+        @if (!string.IsNullOrEmpty(Result.ExtraInfo))
+        {
+            <span class="search-result-extra">@Result.ExtraInfo</span>
+        }
+    </div>
+</div>

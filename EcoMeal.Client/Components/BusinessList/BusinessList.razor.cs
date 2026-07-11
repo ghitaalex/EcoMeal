@@ -10,9 +10,6 @@ namespace EcoMeal.Client.Components.BusinessList
         [Inject]
         public required BusinessService BusinessService { get; set; }
 
-        [CascadingParameter(Name = "SearchText")]
-        public string SearchText { get; set; } = string.Empty;
-
         private List<BusinessModel>? Businesses { get; set; }
         private string? _selectedType;
 
@@ -26,8 +23,6 @@ namespace EcoMeal.Client.Components.BusinessList
                 var results = Businesses ?? [];
                 if (!string.IsNullOrWhiteSpace(_selectedType))
                     results = results.Where(b => b.BusinessTypeName.Equals(_selectedType, StringComparison.OrdinalIgnoreCase)).ToList();
-                if (!string.IsNullOrWhiteSpace(SearchText))
-                    results = results.Where(b => b.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
                 return results;
             }
         }

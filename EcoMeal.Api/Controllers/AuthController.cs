@@ -57,5 +57,24 @@ namespace EcoMeal.Api.Controllers
                 Roles = roles
             });
         }
+
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IActionResult> UpdateMe([FromBody] UpdateProfileRequest request)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return NotFound();
+
+            user.Name = request.Name;
+            user.Contact = request.Contact;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+                return BadRequest(new { Errors = result.Errors.Select(e => e.Description) });
+
+            return Ok(new { Message = "Profile updated successfully" });
+        }
     }
 }

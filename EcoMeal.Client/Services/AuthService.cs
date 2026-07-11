@@ -106,6 +106,46 @@ public class AuthService
         }
     }
 
+    public async Task<UserMeResponse?> GetProfileAsync()
+    {
+        try
+        {
+            var response = await _http.GetAsync("api/auth/me");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<UserMeResponse>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching profile: {ex.Message}");
+        }
+        return null;
+    }
+
+    public async Task<AuthResult> UpdateProfileAsync(string name, string contact)
+    {
+        try
+        {
+            var payload = new { Name = name, Contact = contact };
+            var response = await _http.PutAsJsonAsync("api/auth/me", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                UserName = name;
+                await _localStorage.SetAsync("userName", name);
+                return AuthResult.Ok();
+            }
+
+            var error = await response.Content.ReadAsStringAsync();
+            return AuthResult.Fail(error ?? "Failed to update profile.");
+        }
+        catch (Exception ex)
+        {
+            return AuthResult.Fail($"Error: {ex.Message}");
+        }
+    }
+
     private async Task<List<string>> FetchRolesAsync(string token)
     {
         try

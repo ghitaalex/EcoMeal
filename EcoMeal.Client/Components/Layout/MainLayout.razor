@@ -2,8 +2,6 @@
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
-@implements IDisposable
-
 <MudThemeProvider Theme="_theme" IsDarkMode="true" />
 <MudPopoverProvider />
 <MudDialogProvider />
@@ -17,16 +15,8 @@
             <span style="font-weight: 300;">Eco</span><span style="font-weight: 800; color: #34D399;">Meal</span>
         </MudButton>
         <MudSpacer />
-        @if (_isHomePage)
-        {
-            <MudPaper Elevation="0" Class="d-flex align-center" Style="border: 1.5px solid #1E3A2F; border-radius: 50px; padding: 0.2rem 0.75rem; max-width: 400px; width: 100%; background: #141A2A;">
-                <MudIcon Icon="@Icons.Material.Outlined.Search" Style="color: #059669; font-size: 1.25rem; margin-right: 0.5rem;" />
-                <MudTextField @bind-Value="_searchText" Immediate="true" Placeholder="Search businesses..."
-                              Variant="Variant.Text" Margin="Margin.Dense"
-                              Style="flex: 1; font-size: 0.9rem; color: #F1F5F9;" DisableUnderLine="true" />
-            </MudPaper>
-            <MudSpacer />
-        }
+        <SearchDropdown />
+        <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" />
         @if (AuthService.IsAuthenticated)
         {
@@ -41,6 +31,7 @@
                         <MudText Typo="Typo.caption" Style="color: #64748B;">Welcome back!</MudText>
                     </div>
                     <MudDivider Style="border-color: #1E3A2F;" />
+                    <MudMenuItem Href="/profile" Icon="@Icons.Material.Outlined.AccountCircle" IconColor="Color.Success" Style="color: #F1F5F9;">Profile</MudMenuItem>
                     <MudMenuItem OnClick="HandleLogout" Icon="@Icons.Material.Outlined.Logout" IconColor="Color.Error" Style="color: #FCA5A5;">Logout</MudMenuItem>
                 </ChildContent>
             </MudMenu>
@@ -56,16 +47,12 @@
         <NavMenu />
     </MudDrawer>
     <MudMainContent Class="pa-4" Style="margin-top: 48px; background: #0B0F19; min-height: 100vh;">
-        <CascadingValue Value="_searchText" Name="SearchText">
-            @Body
-        </CascadingValue>
+        @Body
     </MudMainContent>
 </MudLayout>
 
 @code {
     private bool _drawerOpen = false;
-    private string _searchText = string.Empty;
-    private bool _isHomePage;
 
     private MudTheme _theme = new()
     {
@@ -91,30 +78,9 @@
         }
     };
 
-    protected override void OnInitialized()
-    {
-        _isHomePage = IsHome();
-        NavigationManager.LocationChanged += OnLocationChanged;
-    }
-
-    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
-    {
-        _isHomePage = IsHome();
-        _searchText = string.Empty;
-        InvokeAsync(StateHasChanged);
-    }
-
-    private bool IsHome() =>
-        new Uri(NavigationManager.Uri).AbsolutePath.TrimEnd('/') is "" or "/";
-
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
-    }
-
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

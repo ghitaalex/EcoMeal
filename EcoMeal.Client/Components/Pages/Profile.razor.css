@@ -1,0 +1,378 @@
+.profile-wrapper {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: calc(100vh - 80px);
+    padding-top: 2rem;
+}
+
+::deep .profile-card {
+    width: 100%;
+    max-width: 560px;
+    background: linear-gradient(135deg, rgba(20, 26, 42, 0.9), rgba(11, 15, 25, 0.95));
+    border: 1px solid rgba(5, 150, 105, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    backdrop-filter: blur(20px);
+    box-shadow:
+        0 0 40px rgba(5, 150, 105, 0.08),
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: cardEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardEntry {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+::deep .profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+::deep .profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #059669, #34D399);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    color: white;
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.3);
+}
+
+::deep .profile-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #F1F5F9;
+    margin-bottom: 0.35rem;
+}
+
+::deep .profile-subtitle {
+    color: #64748B;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+::deep .profile-loading {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+::deep .profile-error {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #FCA5A5;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+    animation: shake 0.4s ease-in-out;
+}
+
+::deep .profile-success {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(5, 150, 105, 0.1);
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    color: #6EE7B7;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+::deep .profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+}
+
+::deep .info-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+}
+
+::deep .info-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+::deep .info-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(5, 150, 105, 0.1);
+    border: 1px solid rgba(5, 150, 105, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #34D399;
+    flex-shrink: 0;
+}
+
+::deep .info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+::deep .info-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+::deep .info-value {
+    font-size: 0.95rem;
+    color: #F1F5F9;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+::deep .roles-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+::deep .role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: rgba(5, 150, 105, 0.15);
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    color: #34D399;
+}
+
+::deep .profile-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+::deep .profile-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+::deep .profile-btn:hover::before {
+    left: 100%;
+}
+
+::deep .profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+}
+
+::deep .profile-btn:active {
+    transform: translateY(0);
+}
+
+::deep .profile-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+::deep .profile-btn-secondary {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #94A3B8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+::deep .profile-btn-secondary:hover {
+    border-color: rgba(148, 163, 184, 0.4);
+    color: #F1F5F9;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+::deep .profile-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+::deep .auth-field {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+::deep .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 13px;
+    color: #475569;
+    pointer-events: none;
+    transition: color 0.2s ease;
+    z-index: 1;
+}
+
+::deep .auth-field:focus-within .input-icon {
+    color: #34D399;
+}
+
+::deep .auth-input {
+    padding-left: 44px !important;
+    height: 48px;
+    border-radius: 12px !important;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+}
+
+::deep .auth-input:hover {
+    border-color: #2D4A3F;
+}
+
+::deep .auth-input::placeholder {
+    color: #475569;
+}
+
+::deep .validation-message {
+    font-size: 0.78rem;
+    margin-top: 0.35rem;
+    padding-left: 44px;
+}
+
+::deep .orders-card {
+    animation-delay: 0.1s;
+}
+
+::deep .orders-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+::deep .orders-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(5, 150, 105, 0.1);
+    border: 1px solid rgba(5, 150, 105, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #34D399;
+    flex-shrink: 0;
+}
+
+::deep .orders-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #F1F5F9;
+    margin: 0 0 0.15rem;
+}
+
+::deep .orders-subtitle {
+    color: #64748B;
+    font-size: 0.825rem;
+    margin: 0;
+}
+
+::deep .orders-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #475569;
+    border: 1px dashed rgba(71, 85, 105, 0.3);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+::deep .orders-empty svg {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+::deep .orders-empty p {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #64748B;
+    margin: 0 0 0.25rem;
+}
+
+::deep .orders-empty span {
+    font-size: 0.825rem;
+    color: #475569;
+}
+
+@media (max-width: 500px) {
+    ::deep .profile-card {
+        padding: 1.5rem;
+    }
+
+    ::deep .profile-actions {
+        flex-direction: column;
+    }
+}
