@@ -17,10 +17,14 @@ namespace EcoMeal.Client.Services
             return businesses ?? new List<BusinessModel>();
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<(bool Success, string? ErrorMessage)> DeleteAsync(int id)
         {
             var response = await _http.DeleteAsync($"api/business/{id}");
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var body = await response.Content.ReadAsStringAsync();
+            return (false, $"Delete failed ({(int)response.StatusCode}): {body}");
         }
 
         public async Task<BusinessDetailsModel?> GetOneById(int id)

@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using EcoMeal.Api.Constants;
 using EcoMeal.Api.Entities;
@@ -7,6 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddAzureKeyVault(
+    new Uri("https://ecomeal-vault.vault.azure.net/"),
+    new DefaultAzureCredential());
 
 // Add services to the container.
 

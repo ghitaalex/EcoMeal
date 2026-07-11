@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMeal.Api.Migrations
 {
     [DbContext(typeof(EcoMealDbContext))]
-    [Migration("20260710073641_AddedIdentity")]
-    partial class AddedIdentity
+    [Migration("20260711104942_InitialSqlServer")]
+    partial class InitialSqlServer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

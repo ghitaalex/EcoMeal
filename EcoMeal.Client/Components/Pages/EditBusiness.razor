@@ -156,7 +156,7 @@
 
     private async Task HandleDelete()
     {
-        var success = await BusinessService.DeleteAsync(Id);
+        var (success, _) = await BusinessService.DeleteAsync(Id);
         if (success)
         {
             NavigationManager.NavigateTo("/");

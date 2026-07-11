@@ -45,11 +45,28 @@
                 <button type="button" class="btn-edit" @onclick="NavigateToEdit" @onclick:stopPropagation="true">
                     <i class="bi bi-pencil"></i> Edit
                 </button>
-                <button type="button" class="btn-delete" @onclick="HandleDelete" @onclick:stopPropagation="true">
-                    <i class="bi bi-trash3"></i> Remove
+                <button type="button" class="btn-delete" @onclick="HandleDelete" @onclick:stopPropagation="true" disabled="@_deleting">
+                    @if (_deleting)
+                    {
+                        <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Style="width: 14px; height: 14px; color: inherit;" />
+                        <span>Deleting…</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-trash3"></i>
+                        <span>Remove</span>
+                    }
                 </button>
             </div>
         </AuthorizeView>
     </div>
 </div>
+
+<MudMessageBox @ref="_deleteConfirmBox" Title="Delete Business" YesText="Delete" CancelText="Cancel">
+    <MessageContent>
+        <MudText Typo="Typo.body1">
+            Are you sure you want to delete <b>@Business.Name</b>? This action cannot be undone.
+        </MudText>
+    </MessageContent>
+</MudMessageBox>
 }

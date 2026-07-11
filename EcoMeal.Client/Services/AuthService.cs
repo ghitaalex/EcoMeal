@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using EcoMeal.Client.Models.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -50,6 +51,7 @@ public class AuthService
 
             if (Token != null)
             {
+                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
                 await _localStorage.SetAsync("authToken", Token);
 
                 var roles = await FetchRolesAsync(Token);
@@ -74,6 +76,8 @@ public class AuthService
 
         if (Token != null)
         {
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+
             var rolesResult = await _localStorage.GetAsync<List<string>>("userRoles");
             var roles = rolesResult.Success && rolesResult.Value != null ? rolesResult.Value : new List<string>();
 
@@ -91,6 +95,7 @@ public class AuthService
     {
         Token = null;
         UserName = null;
+        _http.DefaultRequestHeaders.Authorization = null;
         await _localStorage.DeleteAsync("authToken");
         await _localStorage.DeleteAsync("userRoles");
         await _localStorage.DeleteAsync("userName");
