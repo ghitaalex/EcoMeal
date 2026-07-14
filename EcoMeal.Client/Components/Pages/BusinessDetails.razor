@@ -50,6 +50,11 @@ else
                            OnClick="NavigateToAddPackage">
                     Add Package
                 </MudButton>
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ListAlt"
+                           Style="color: #6EE7B7; border-color: #1E3A2F; text-transform: none; font-weight: 700; border-radius: 12px;"
+                           Href="@($"/business/{Id}/orders")">
+                    Manage Orders
+                </MudButton>
             </AuthorizeView>
         </MudStack>
 
@@ -107,7 +112,7 @@ else
                                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
                                         <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="MudBlazor.Size.Small" Style="color: #059669;" />
                                         <MudText Typo="Typo.body2" Style="color: #CBD5E1;">
-                                            @package.PickUpStart.ToString("HH:mm") – @package.PickUpEnd.ToString("HH:mm")
+                                            @package.PickUpStart.ToLocalTime().ToString("HH:mm") – @package.PickUpEnd.ToLocalTime().ToString("HH:mm")
                                         </MudText>
                                     </MudStack>
                                     <AuthorizeView Roles="Admin">
@@ -116,12 +121,98 @@ else
                                                        OnClick="() => NavigateToEditPackage(package.Id)" />
                                     </AuthorizeView>
                                 </MudStack>
+                                <AuthorizeView>
+                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ShoppingCart"
+                                               FullWidth="true" Class="mt-3"
+                                               Style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #fff; text-transform: none; font-weight: 600; border-radius: 10px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.25);"
+                                               Disabled="@(_orderingPackageId == package.Id)"
+                                               OnClick="() => PlaceOrder(package.Id)">
+                                        @if (_orderingPackageId == package.Id)
+                                        {
+                                            <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Style="width:16px;height:16px;color:#fff;" Class="me-2" />
+                                            <span>Placing order…</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Order Now</span>
+                                        }
+                                    </MudButton>
+                                </AuthorizeView>
                             </MudCardContent>
                         </MudCard>
                     </MudItem>
                 }
             </MudGrid>
         }
+
+        <MudText Typo="Typo.h5" Class="mt-10 mb-4" Style="font-weight: 600; color: #6EE7B7;">Reviews</MudText>
+
+        @if (Reviews is null)
+        {
+            <MudProgressLinear Indeterminate="true" Color="MudBlazor.Color.Success" Class="my-4" />
+        }
+        else if (!Reviews.Any())
+        {
+            <MudPaper Class="pa-8 rounded-xl d-flex flex-column align-center" Style="border: 1px dashed #1E3A2F; background: #141A2A;" Elevation="0">
+                <MudIcon Icon="@Icons.Material.Outlined.Reviews" Style="font-size: 2.5rem; color: #047857;" />
+                <MudText Typo="Typo.body1" Class="mt-3" Style="color: #64748B;">No reviews yet</MudText>
+            </MudPaper>
+        }
+        else
+        {
+            <MudStack Spacing="3">
+                @foreach (var review in Reviews)
+                {
+                    <MudPaper Class="pa-5 rounded-xl" Style="background: #141A2A; border: 1px solid #1E3A2F;" Elevation="0">
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                            <MudStack Spacing="1">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudAvatar Size="MudBlazor.Size.Small" Style="background: linear-gradient(135deg, #059669, #34D399); color: #fff; font-size: 0.75rem;">
+                                        @(review.UserName?.Length > 0 ? review.UserName[0].ToString().ToUpper() : "?")
+                                    </MudAvatar>
+                                    <MudText Typo="Typo.subtitle2" Style="color: #F1F5F9; font-weight: 600;">@review.UserName</MudText>
+                                    <MudText Typo="Typo.caption" Style="color: #64748B;">@review.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</MudText>
+                                </MudStack>
+                                <MudRating ReadOnly="true" SelectedValue="@review.Rating" MaxValue="5"
+                                           FullIcon="@Icons.Material.Filled.Star" EmptyIcon="@Icons.Material.Filled.StarBorder"
+                                           Color="MudBlazor.Color.Warning" Size="MudBlazor.Size.Small" />
+                                @if (!string.IsNullOrEmpty(review.Comment))
+                                {
+                                    <MudText Typo="Typo.body2" Class="mt-1" Style="color: #CBD5E1;">@review.Comment</MudText>
+                                }
+                            </MudStack>
+                        </MudStack>
+                    </MudPaper>
+                }
+            </MudStack>
+        }
+
+        <AuthorizeView>
+            @if (MyBusinessOrders is not null && MyBusinessOrders.Any())
+            {
+                <MudText Typo="Typo.h5" Class="mt-10 mb-4" Style="font-weight: 600; color: #6EE7B7;">Your Orders Here</MudText>
+                <MudStack Spacing="3">
+                    @foreach (var order in MyBusinessOrders.OrderByDescending(o => o.Date))
+                    {
+                        <MudPaper Class="pa-4 rounded-xl" Style="background: #141A2A; border: 1px solid #1E3A2F;" Elevation="0">
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.subtitle2" Style="color: #F1F5F9; font-weight: 600;">@order.PackageName</MudText>
+                                    <MudText Typo="Typo.caption" Style="color: #64748B;">@order.Date.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</MudText>
+                                </MudStack>
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudText Typo="Typo.body2" Style="color: #6EE7B7; font-weight: 600;">@order.Price.ToString("C")</MudText>
+                                    <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled"
+                                             Style="@GetStatusChipStyle(order.Status)">
+                                        @order.Status
+                                    </MudChip>
+                                </MudStack>
+                            </MudStack>
+                        </MudPaper>
+                    }
+                </MudStack>
+            }
+        </AuthorizeView>
     </MudContainer>
 }
 
@@ -134,15 +225,60 @@ else
     [Inject]
     public required PackageService packageService { get; set; }
     [Inject]
+    public required OrderService orderService { get; set; }
+    [Inject]
+    public required ReviewService reviewService { get; set; }
+    [Inject]
     public required NavigationManager NavigationManager { get; set; }
+    [Inject]
+    public required ISnackbar Snackbar { get; set; }
 
     private BusinessDetailsModel? Business;
     private List<PackageGetModel>? Packages;
+    private List<ReviewGetModel>? Reviews;
+    private List<OrderGetModel>? MyBusinessOrders;
+    private int? _orderingPackageId;
 
     protected override async Task OnInitializedAsync()
     {
         Business = await businessService.GetOneById(Id);
         Packages = await packageService.GetByBusinessId(Id);
+        Reviews = await reviewService.GetByBusinessAsync(Id);
+        try
+        {
+            var allOrders = await orderService.GetMyOrderAsync();
+            MyBusinessOrders = allOrders.Where(o => o.BusinessId == Id).ToList();
+        }
+        catch { }
+    }
+
+    private async Task PlaceOrder(int packageId)
+    {
+        _orderingPackageId = packageId;
+        StateHasChanged();
+
+        var success = await orderService.PlaceOrderAsync(packageId);
+        if (success)
+        {
+            Snackbar.Add("Order placed successfully!", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Failed to place order. Please try again.", Severity.Error);
+        }
+
+        _orderingPackageId = null;
+    }
+
+    private static string GetStatusChipStyle(string status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" or "picked up" => "background: rgba(5, 150, 105, 0.15); color: #6EE7B7; font-weight: 600;",
+            "cancelled" => "background: rgba(239, 68, 68, 0.15); color: #FCA5A5; font-weight: 600;",
+            "pending" => "background: rgba(245, 158, 11, 0.15); color: #FCD34D; font-weight: 600;",
+            _ => "background: rgba(59, 130, 246, 0.15); color: #93C5FD; font-weight: 600;"
+        };
     }
 
     public void NavigateToAddPackage()

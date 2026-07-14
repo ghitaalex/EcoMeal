@@ -4,6 +4,12 @@
     flex-direction: column;
 }
 
+::deep .navbar-search {
+    flex: 1;
+    max-width: 420px;
+    min-width: 0;
+}
+
 ::deep .search-bar .mud-input-slot {
     padding-top: 8px !important;
 }

@@ -1,6 +1,5 @@
 .search-dropdown-wrapper {
     position: relative;
-    max-width: 420px;
     width: 100%;
 }
 
@@ -13,6 +12,7 @@
     font-size: 0.9rem;
     font-family: inherit;
     width: 100%;
+    min-width: 0;
     padding: 0.25rem 0;
 }
 
@@ -66,4 +66,18 @@
     padding: 1rem;
     color: #64748B;
     font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+    .search-results-dropdown {
+        position: fixed;
+        top: 56px;
+        left: 0.5rem;
+        right: 0.5rem;
+        border-radius: 12px;
+    }
+
+    .search-input {
+        font-size: 0.8rem;
+    }
 }

@@ -4,6 +4,7 @@ using EcoMeal.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMeal.Api.Migrations
 {
     [DbContext(typeof(EcoMealDbContext))]
-    partial class EcoMealDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260711184911_AddedReviews")]
+    partial class AddedReviews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,14 +180,14 @@ namespace EcoMeal.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BusinessId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -194,8 +197,7 @@ namespace EcoMeal.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
+                    b.HasIndex("BusinessId");
 
                     b.HasIndex("UserId");
 
@@ -460,19 +462,19 @@ namespace EcoMeal.Api.Migrations
 
             modelBuilder.Entity("EcoMeal.Api.Entities.Review", b =>
                 {
-                    b.HasOne("EcoMeal.Api.Entities.Order", "Order")
+                    b.HasOne("EcoMeal.Api.Entities.Business", "Business")
                         .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EcoMeal.Api.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("Business");
 
                     b.Navigation("User");
                 });

@@ -10,14 +10,16 @@
 <MudLayout>
     <MudAppBar Elevation="0" Fixed="true" Style="background: #111827; color: #F1F5F9; border-bottom: 1px solid #1E3A2F;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
-        <MudButton Href="/" Variant="Variant.Text" Style="text-transform: none; color: #F1F5F9; font-size: 1.25rem; font-family: 'Inter', sans-serif;">
+        <MudButton Href="/" Variant="Variant.Text" Class="brand-btn" Style="text-transform: none; color: #F1F5F9; font-size: 1.25rem; font-family: 'Inter', sans-serif; min-width: auto; padding: 0 0.5rem;">
             <MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" Style="color: #059669; margin-right: 0.25rem;" />
-            <span style="font-weight: 300;">Eco</span><span style="font-weight: 800; color: #34D399;">Meal</span>
+            <span class="brand-text d-none d-sm-inline"><span style="font-weight: 300;">Eco</span><span style="font-weight: 800; color: #34D399;">Meal</span></span>
         </MudButton>
         <MudSpacer />
-        <SearchDropdown />
+        <div class="navbar-search">
+            <SearchDropdown />
+        </div>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" />
+        <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" Href="/orders" />
         @if (AuthService.IsAuthenticated)
         {
             <MudMenu Icon="@Icons.Material.Filled.Person" Color="Color.Success" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"

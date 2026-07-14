@@ -21,6 +21,8 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddScoped<BusinessService>();
 builder.Services.AddScoped<PackageService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 builder.Services.AddAuthorizationCore();

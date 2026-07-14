@@ -31,8 +31,8 @@ namespace EcoMeal.Client.Components.BusinessCard
             if (packages.Count > 0)
             {
                 _lowestPrice = packages.Min(p => p.Price);
-                var earliest = packages.OrderBy(p => p.PickUpStart.TimeOfDay).First();
-                _earliestPickup = earliest.PickUpStart.ToString("HH:mm");
+                var earliest = packages.OrderBy(p => p.PickUpStart.ToLocalTime().TimeOfDay).First();
+                _earliestPickup = earliest.PickUpStart.ToLocalTime().ToString("HH:mm");
             }
         }
 

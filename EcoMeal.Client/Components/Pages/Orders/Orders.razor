@@ -1,0 +1,164 @@
+@page "/orders"
+
+<PageTitle>My Orders</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-8">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-6">
+        <MudStack Spacing="0">
+            <MudText Typo="Typo.h4" Style="font-weight: 700; color: #F1F5F9;">My Orders</MudText>
+            <MudText Typo="Typo.body2" Style="color: #64748B;">Track and manage your food rescue orders</MudText>
+        </MudStack>
+        @if (MyOrders is not null && MyOrders.Any())
+        {
+            <MudChip T="string" Size="MudBlazor.Size.Medium" Variant="Variant.Filled"
+                     Style="background: rgba(5, 150, 105, 0.15); color: #6EE7B7; font-weight: 600;">
+                @MyOrders.Count order@(MyOrders.Count != 1 ? "s" : "")
+            </MudChip>
+        }
+    </MudStack>
+
+    @if (MyOrders is null)
+    {
+        <MudStack Spacing="3">
+            @for (int i = 0; i < 3; i++)
+            {
+                <MudPaper Class="pa-6 rounded-xl" Style="background: #141A2A; border: 1px solid #1E3A2F;" Elevation="0">
+                    <MudSkeleton SkeletonType="SkeletonType.Text" Width="40%" Height="24px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Text" Width="60%" Height="18px" Class="mt-2" />
+                    <MudSkeleton SkeletonType="SkeletonType.Text" Width="25%" Height="18px" Class="mt-2" />
+                </MudPaper>
+            }
+        </MudStack>
+    }
+    else if (!MyOrders.Any())
+    {
+        <MudPaper Class="pa-12 rounded-xl d-flex flex-column align-center justify-center" Style="border: 2px dashed #1E3A2F; background: #141A2A;" Elevation="0">
+            <MudIcon Icon="@Icons.Material.Outlined.ShoppingBag" Style="font-size: 4rem; color: #047857;" />
+            <MudText Typo="Typo.h6" Class="mt-4" Style="color: #CBD5E1; font-weight: 600;">No orders yet</MudText>
+            <MudText Typo="Typo.body2" Class="mt-1 mb-4" Style="color: #64748B;">Browse businesses and grab a surprise package!</MudText>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Storefront"
+                       Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 600; border-radius: 12px;"
+                       Href="/">
+                Browse Businesses
+            </MudButton>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTimeline TimelinePosition="TimelinePosition.Start" Class="orders-timeline">
+            @foreach (var order in MyOrders.OrderByDescending(o => o.Date))
+            {
+                <MudTimelineItem Size="MudBlazor.Size.Medium" Color="@GetTimelineColor(order.Status)" Variant="Variant.Filled">
+                    <ItemDot>
+                        <MudIcon Icon="@GetStatusIcon(order.Status)" Size="MudBlazor.Size.Small" />
+                    </ItemDot>
+                    <ItemContent>
+                        <MudPaper Class="order-card pa-0 rounded-xl" Style="background: #141A2A; border: 1px solid #1E3A2F; overflow: hidden;" Elevation="0">
+                            <div class="order-card-header">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="px-5 py-3">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="MudBlazor.Size.Small" Style="color: #64748B;" />
+                                        <MudText Typo="Typo.body2" Style="color: #94A3B8;">@order.Date.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</MudText>
+                                    </MudStack>
+                                    <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled"
+                                             Style="@GetStatusChipStyle(order.Status)">
+                                        @order.Status
+                                    </MudChip>
+                                </MudStack>
+                            </div>
+                            <MudDivider Style="border-color: #1E3A2F;" />
+                            <div class="px-5 py-4">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                                    <MudStack Spacing="1">
+                                        <MudText Typo="Typo.subtitle1" Style="font-weight: 700; color: #F1F5F9;">
+                                            @order.PackageName
+                                        </MudText>
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudIcon Icon="@Icons.Material.Filled.Store" Size="MudBlazor.Size.Small" Style="color: #059669;" />
+                                            <MudLink Href="@($"/business/{order.BusinessId}")" Style="color: #6EE7B7; font-weight: 500; text-decoration: none;">
+                                                @order.BusinessName
+                                            </MudLink>
+                                        </MudStack>
+                                    </MudStack>
+                                    <MudStack AlignItems="AlignItems.End" Spacing="0">
+                                        <MudText Typo="Typo.h6" Style="font-weight: 700; color: #6EE7B7;">
+                                            @order.Price.ToString("C")
+                                        </MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </div>
+                            <div class="order-card-footer px-5 py-3">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                    <MudText Typo="Typo.caption" Style="color: #64748B;">
+                                        Order #@order.Id
+                                    </MudText>
+                                    <MudButton Variant="Variant.Text" Size="MudBlazor.Size.Small"
+                                               EndIcon="@Icons.Material.Filled.ArrowForward"
+                                               Style="color: #6EE7B7; text-transform: none; font-weight: 600;"
+                                               Href="@($"/business/{order.BusinessId}")">
+                                        View Business
+                                    </MudButton>
+                                </MudStack>
+                            </div>
+                            @if (order.Status?.Equals("Completed", StringComparison.OrdinalIgnoreCase) == true)
+                            {
+                                <MudDivider Style="border-color: #1E3A2F;" />
+                                <div class="px-5 py-3">
+                                    @if (order.IsReviewed || _reviewedOrderIds.Contains(order.Id))
+                                    {
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="MudBlazor.Size.Small" Style="color: #059669;" />
+                                            <MudText Typo="Typo.body2" Style="color: #6EE7B7; font-weight: 500;">Reviewed</MudText>
+                                        </MudStack>
+                                    }
+                                    else if (_reviewingOrderId == order.Id)
+                                    {
+                                        <MudStack Spacing="2">
+                                            <MudRating @bind-SelectedValue="_newRating" MaxValue="5"
+                                                       FullIcon="@Icons.Material.Filled.Star"
+                                                       EmptyIcon="@Icons.Material.Filled.StarBorder"
+                                                       Color="MudBlazor.Color.Warning" />
+                                            <MudTextField @bind-Value="_newComment" Label="Your review (optional)"
+                                                          Variant="Variant.Outlined" Lines="2" Style="color: #F1F5F9;" />
+                                            <MudStack Row="true" Spacing="2">
+                                                <MudButton Variant="Variant.Filled" Size="MudBlazor.Size.Small"
+                                                           StartIcon="@Icons.Material.Filled.Send"
+                                                           Style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #fff; text-transform: none; font-weight: 600; border-radius: 10px;"
+                                                           Disabled="@(_newRating == 0 || _submittingReview)"
+                                                           OnClick="@(() => SubmitReview(order.BusinessId))">
+                                                    @if (_submittingReview)
+                                                    {
+                                                        <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Style="width:14px;height:14px;color:#fff;" Class="me-1" />
+                                                        <span>Submitting…</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Submit Review</span>
+                                                    }
+                                                </MudButton>
+                                                <MudButton Variant="Variant.Text" Size="MudBlazor.Size.Small"
+                                                           Style="color: #94A3B8; text-transform: none;"
+                                                           OnClick="CancelReview">
+                                                    Cancel
+                                                </MudButton>
+                                            </MudStack>
+                                        </MudStack>
+                                    }
+                                    else
+                                    {
+                                        <MudButton Variant="Variant.Outlined" Size="MudBlazor.Size.Small"
+                                                   StartIcon="@Icons.Material.Filled.RateReview"
+                                                   Style="color: #6EE7B7; border-color: #1E3A2F; text-transform: none; font-weight: 600; border-radius: 10px;"
+                                                   OnClick="@(() => StartReview(order.Id))">
+                                            Leave a Review
+                                        </MudButton>
+                                    }
+                                </div>
+                            }
+                        </MudPaper>
+                    </ItemContent>
+                </MudTimelineItem>
+            }
+        </MudTimeline>
+    }
+</MudContainer>

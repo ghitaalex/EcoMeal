@@ -15,6 +15,7 @@ namespace EcoMeal.Api.Infrastructure
         public DbSet<Business> Business { get; set; }
         public DbSet<Package> Package { get; set; }
         public DbSet<Order> Order { get; set; }
+        public DbSet<Review> Review { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +55,24 @@ namespace EcoMeal.Api.Infrastructure
             modelBuilder.Entity<Package>()
                 .Property(p => p.Price)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Review>().HasKey(e => e.Id);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Order)
+                .WithMany()
+                .HasForeignKey(r => r.OrderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Review>()
+                .HasIndex(r => r.OrderId)
+                .IsUnique();
         }
     }
 }

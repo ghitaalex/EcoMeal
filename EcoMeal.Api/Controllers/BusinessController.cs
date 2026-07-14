@@ -60,9 +60,11 @@ namespace EcoMeal.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BusinessDetailsDTO>> GetOneById(int id)
+        public async Task<ActionResult<BusinessDTO>> GetOneById(int id)
         {
             var business = await _context.Business
+                .Include (b => b.Packages)
+                .ThenInclude(p => p.PackageType)
                 .Select(b => new BusinessDetailsDTO
                 {
                     Id = b.Id,
@@ -71,6 +73,18 @@ namespace EcoMeal.Api.Controllers
                     Description = b.Description,
                     Contact = b.Contact,
                     BusinessTypeName = b.BusinessType.Name,
+                    Packages = b.Packages
+                    .Where(p => p.Orders.Count == 0).Select(p => new PackageDTO
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Description = p.Description,
+                        Price = p.Price,
+                        PickUpStart = p.PickUpStart,
+                        PickUpEnd = p.PickUpEnd,
+                        PackageTypeName = p.PackageType.Name,
+                        PackageImageUrl = p.PackageImageUrl,
+                    }),
                     BusinessImageUrl = b.BusinessImageUrl
                 })
                 .FirstOrDefaultAsync(b => b.Id == id);

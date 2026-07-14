@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddAzureKeyVault(
+/*builder.Configuration.AddAzureKeyVault(
     new Uri("https://ecomeal-vault.vault.azure.net/"),
     new DefaultAzureCredential());
-
+*/
 // Add services to the container.
 
 builder.Services.AddControllers();
