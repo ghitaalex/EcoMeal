@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using EcoMeal.Client.Models;
 
 namespace EcoMeal.Client.Services;
@@ -21,14 +22,18 @@ public class OrderService
 
     public async Task<List<OrderGetModel>> GetMyOrderAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<OrderGetModel>>("api/order");
-        return response ?? new List<OrderGetModel>();
+        var response = await _httpClient.GetAsync("api/order");
+        if (!response.IsSuccessStatusCode)
+            return new List<OrderGetModel>();
+        return await response.Content.ReadFromJsonAsync<List<OrderGetModel>>() ?? new List<OrderGetModel>();
     }
 
     public async Task<List<OrderGetModel>> GetOrdersByBusinessAsync(int businessId)
     {
-        var response = await _httpClient.GetFromJsonAsync<List<OrderGetModel>>($"api/order/business/{businessId}");
-        return response ?? new List<OrderGetModel>();
+        var response = await _httpClient.GetAsync($"api/order/business/{businessId}");
+        if (!response.IsSuccessStatusCode)
+            return new List<OrderGetModel>();
+        return await response.Content.ReadFromJsonAsync<List<OrderGetModel>>() ?? new List<OrderGetModel>();
     }
 
     public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)

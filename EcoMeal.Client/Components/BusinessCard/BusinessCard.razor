@@ -4,7 +4,7 @@
 @if (!_deleted)
 {
 <div class="business-card" @onclick="NavigateToDetails">
-    <div class="card-hero" style="@(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "background: linear-gradient(135deg, #0B0F19 0%, #047857 100%);" : $"background: url('{Business.BusinessImageUrl}') center/cover no-repeat;")">
+    <div class="card-hero" style="@(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "background: var(--gradient-default);" : $"background: url('{Business.BusinessImageUrl}') center/cover no-repeat;")">
         <div class="card-hero-overlay"></div>
         <div class="card-hero-content">
             <span class="business-type-badge">@Business.BusinessTypeName</span>
@@ -17,6 +17,9 @@
                 <span class="hero-chip"><i class="bi bi-geo-alt-fill"></i> @Business.Address</span>
                 <span class="hero-chip"><i class="bi bi-envelope-fill"></i> @Business.Contact</span>
             </div>
+            <div class="hero-details" style="margin-top: 0.4rem;">
+                <span class="hero-chip"><i class="bi bi-star-fill" style="color: #F59E0B;"></i> @Business.AverageRating.ToString("0.0") (@Business.ReviewCount)</span>
+            </div>
         </div>
     </div>
     <div class="card-content">
@@ -25,7 +28,7 @@
             <div class="card-package-info">
                 <div class="package-info-item">
                     <i class="bi bi-tag-fill"></i>
-                    <span>From @_lowestPrice.Value.ToString("C")</span>
+                    <span>From @_lowestPrice.Value.ToString("0.00") RON</span>
                 </div>
                 @if (_earliestPickup is not null)
                 {

@@ -9,5 +9,7 @@
         public required string Contact { get; set; }
         public required string BusinessTypeName { get; set; }
         public string? BusinessImageUrl { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
     }
 }

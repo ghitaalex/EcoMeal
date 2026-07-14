@@ -7,20 +7,20 @@
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-8">
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack"
-               Style="color: #6EE7B7; text-transform: none; font-weight: 600; margin-bottom: 1rem;"
+               Style="color: var(--accent-light); text-transform: none; font-weight: 600; margin-bottom: 1rem;"
                Href="@($"/business/{BusinessId}")">
         Back to Business
     </MudButton>
 
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-6">
         <MudStack Spacing="0">
-            <MudText Typo="Typo.h4" Style="font-weight: 700; color: #F1F5F9;">Manage Orders</MudText>
-            <MudText Typo="Typo.body2" Style="color: #64748B;">View and update order statuses</MudText>
+            <MudText Typo="Typo.h4" Style="font-weight: 700; color: var(--text-primary);">Manage Orders</MudText>
+            <MudText Typo="Typo.body2" Style="color: var(--text-dim);">View and update order statuses</MudText>
         </MudStack>
         @if (Orders is not null && Orders.Any())
         {
             <MudChip T="string" Size="MudBlazor.Size.Medium" Variant="Variant.Filled"
-                     Style="background: rgba(5, 150, 105, 0.15); color: #6EE7B7; font-weight: 600;">
+                     Style="background: var(--chip-bg); color: var(--accent-light); font-weight: 600;">
                 @Orders.Count order@(Orders.Count != 1 ? "s" : "")
             </MudChip>
         }
@@ -32,37 +32,37 @@
     }
     else if (!Orders.Any())
     {
-        <MudPaper Class="pa-12 rounded-xl d-flex flex-column align-center justify-center" Style="border: 2px dashed #1E3A2F; background: #141A2A;" Elevation="0">
-            <MudIcon Icon="@Icons.Material.Outlined.Inbox" Style="font-size: 4rem; color: #047857;" />
-            <MudText Typo="Typo.h6" Class="mt-4" Style="color: #CBD5E1; font-weight: 600;">No orders yet</MudText>
-            <MudText Typo="Typo.body2" Class="mt-1" Style="color: #64748B;">Orders will appear here when customers place them.</MudText>
+        <MudPaper Class="pa-12 rounded-xl d-flex flex-column align-center justify-center" Style="border: 2px dashed var(--border-color); background: var(--bg-surface);" Elevation="0">
+            <MudIcon Icon="@Icons.Material.Outlined.Inbox" Style="font-size: 4rem; color: var(--accent);" />
+            <MudText Typo="Typo.h6" Class="mt-4" Style="color: var(--text-secondary); font-weight: 600;">No orders yet</MudText>
+            <MudText Typo="Typo.body2" Class="mt-1" Style="color: var(--text-dim);">Orders will appear here when customers place them.</MudText>
         </MudPaper>
     }
     else
     {
         <MudTable Items="@Orders" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0"
-                  Style="background: #141A2A; border: 1px solid #1E3A2F; border-radius: 16px; overflow: hidden;"
+                  Style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden;"
                   HeaderClass="order-table-header" RowClass="order-table-row">
             <HeaderContent>
-                <MudTh Style="color: #94A3B8; font-weight: 600;">Order #</MudTh>
-                <MudTh Style="color: #94A3B8; font-weight: 600;">Package</MudTh>
-                <MudTh Style="color: #94A3B8; font-weight: 600;">Customer</MudTh>
-                <MudTh Style="color: #94A3B8; font-weight: 600;">Date</MudTh>
-                <MudTh Style="color: #94A3B8; font-weight: 600;">Price</MudTh>
-                <MudTh Style="color: #94A3B8; font-weight: 600;">Status</MudTh>
-                <MudTh Style="color: #94A3B8; font-weight: 600;">Actions</MudTh>
+                <MudTh Style="color: var(--text-muted); font-weight: 600;">Order #</MudTh>
+                <MudTh Style="color: var(--text-muted); font-weight: 600;">Package</MudTh>
+                <MudTh Style="color: var(--text-muted); font-weight: 600;">Customer</MudTh>
+                <MudTh Style="color: var(--text-muted); font-weight: 600;">Date</MudTh>
+                <MudTh Style="color: var(--text-muted); font-weight: 600;">Price</MudTh>
+                <MudTh Style="color: var(--text-muted); font-weight: 600;">Status</MudTh>
+                <MudTh Style="color: var(--text-muted); font-weight: 600;">Actions</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Order #" Style="color: #64748B;">#@context.Id</MudTd>
-                <MudTd DataLabel="Package" Style="color: #F1F5F9; font-weight: 500;">@context.PackageName</MudTd>
+                <MudTd DataLabel="Order #" Style="color: var(--text-dim);">#@context.Id</MudTd>
+                <MudTd DataLabel="Package" Style="color: var(--text-primary); font-weight: 500;">@context.PackageName</MudTd>
                 <MudTd DataLabel="Customer">
                     <MudStack Spacing="0">
-                        <MudText Typo="Typo.body2" Style="color: #F1F5F9;">@(context.UserName ?? "—")</MudText>
-                        <MudText Typo="Typo.caption" Style="color: #64748B;">@(context.UserContact ?? "")</MudText>
+                        <MudText Typo="Typo.body2" Style="color: var(--text-primary);">@(context.UserName ?? "—")</MudText>
+                        <MudText Typo="Typo.caption" Style="color: var(--text-dim);">@(context.UserContact ?? "")</MudText>
                     </MudStack>
                 </MudTd>
-                <MudTd DataLabel="Date" Style="color: #CBD5E1;">@context.Date.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</MudTd>
-                <MudTd DataLabel="Price" Style="color: #6EE7B7; font-weight: 600;">@context.Price.ToString("C")</MudTd>
+                <MudTd DataLabel="Date" Style="color: var(--text-secondary);">@context.Date.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</MudTd>
+                <MudTd DataLabel="Price" Style="color: var(--accent-light); font-weight: 600;">@context.Price.ToString("0.00") RON</MudTd>
                 <MudTd DataLabel="Status">
                     <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled"
                              Style="@GetStatusChipStyle(context.Status)">
@@ -72,7 +72,7 @@
                 <MudTd DataLabel="Actions">
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="MudBlazor.Size.Small"
                              AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
-                             Style="color: #94A3B8;">
+                             Style="color: var(--text-muted);">
                         <MudMenuItem OnClick="@(() => UpdateStatus(context.Id, "Pending"))"
                                      Icon="@Icons.Material.Filled.HourglassTop" IconColor="MudBlazor.Color.Warning"
                                      Style="color: #FCD34D;">
@@ -80,7 +80,7 @@
                         </MudMenuItem>
                         <MudMenuItem OnClick="@(() => UpdateStatus(context.Id, "Completed"))"
                                      Icon="@Icons.Material.Filled.CheckCircle" IconColor="MudBlazor.Color.Success"
-                                     Style="color: #6EE7B7;">
+                                     Style="color: var(--accent-light);">
                             Mark Completed
                         </MudMenuItem>
                         <MudMenuItem OnClick="@(() => UpdateStatus(context.Id, "Cancelled"))"
@@ -132,9 +132,9 @@
     {
         return status?.ToLower() switch
         {
-            "completed" or "picked up" => "background: rgba(5, 150, 105, 0.15); color: #6EE7B7; font-weight: 600;",
-            "cancelled" => "background: rgba(239, 68, 68, 0.15); color: #FCA5A5; font-weight: 600;",
-            "pending" => "background: rgba(245, 158, 11, 0.15); color: #FCD34D; font-weight: 600;",
+            "completed" or "picked up" => "background: var(--chip-bg); color: var(--accent-light); font-weight: 600;",
+            "cancelled" => "background: var(--status-cancelled-bg); color: #FCA5A5; font-weight: 600;",
+            "pending" => "background: var(--status-pending-bg); color: #FCD34D; font-weight: 600;",
             _ => "background: rgba(59, 130, 246, 0.15); color: #93C5FD; font-weight: 600;"
         };
     }

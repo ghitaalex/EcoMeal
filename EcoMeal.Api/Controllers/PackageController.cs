@@ -33,6 +33,7 @@ namespace EcoMeal.Api.Controllers
                 Name = package.Name,
                 Description = package.Description,
                 Price = package.Price,
+                NoPackages = package.NoPackages,
                 PickUpStart = package.StartPickup,
                 PickUpEnd = package.EndPickup,
                 PackageTypeId = package.PackageTypeId,
@@ -86,6 +87,7 @@ namespace EcoMeal.Api.Controllers
             existingPackage.Name = package.Name;
             existingPackage.Description = package.Description;
             existingPackage.Price = package.Price;
+            existingPackage.NoPackages = package.NoPackages;
             existingPackage.PickUpStart = package.StartPickup;
             existingPackage.PickUpEnd = package.EndPickup;
             existingPackage.PackageTypeId = package.PackageTypeId;
@@ -105,6 +107,8 @@ namespace EcoMeal.Api.Controllers
                     Name = p.Name,
                     Description = p.Description,
                     Price = p.Price,
+                    NoPackages = p.NoPackages,
+                    AvailablePackages = p.NoPackages,
                     PickUpStart = p.PickUpStart,
                     PickUpEnd = p.PickUpEnd,
                     PackageTypeName = p.PackageType.Name,

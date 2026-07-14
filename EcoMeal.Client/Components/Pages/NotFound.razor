@@ -1,12 +1,12 @@
-﻿@page "/not-found"
+@page "/not-found"
 @layout MainLayout
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex flex-column align-center justify-center" Style="min-height: 60vh; text-align: center;">
-    <MudIcon Icon="@Icons.Material.Outlined.SearchOff" Style="font-size: 5rem; color: #047857; margin-bottom: 1rem;" />
-    <MudText Typo="Typo.h4" Style="font-weight: 800; color: #34D399;">Page Not Found</MudText>
-    <MudText Typo="Typo.body1" Class="mt-2 mb-6" Style="color: #94A3B8;">Sorry, the content you are looking for does not exist.</MudText>
+    <MudIcon Icon="@Icons.Material.Outlined.SearchOff" Style="font-size: 5rem; color: var(--accent); margin-bottom: 1rem;" />
+    <MudText Typo="Typo.h4" Style="font-weight: 800; color: var(--accent-text);">Page Not Found</MudText>
+    <MudText Typo="Typo.body1" Class="mt-2 mb-6" Style="color: var(--text-muted);">Sorry, the content you are looking for does not exist.</MudText>
     <MudButton Variant="Variant.Filled" Href="/"
-               Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);">
+               Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: var(--glow-sm);">
         Back to Home
     </MudButton>
 </MudContainer>

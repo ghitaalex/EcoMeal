@@ -3,17 +3,17 @@
     min-height: 80px;
     height: 80px;
     flex-shrink: 0;
-    background: #141A2A;
+    background: var(--bg-surface);
     border-radius: 14px;
     overflow: hidden;
-    border: 1px solid #1E3A2F;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .search-result-card:hover {
-    border-color: #047857;
-    background: #1C2333;
+    border-color: var(--accent);
+    background: var(--input-bg);
     transform: translateX(4px);
 }
 
@@ -28,12 +28,12 @@
 .search-result-image-fade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, transparent 20%, #141A2A 100%);
+    background: linear-gradient(to right, transparent 20%, var(--bg-surface) 100%);
     transition: background 0.2s ease;
 }
 
 .search-result-card:hover .search-result-image-fade {
-    background: linear-gradient(to right, transparent 20%, #1C2333 100%);
+    background: linear-gradient(to right, transparent 20%, var(--input-bg) 100%);
 }
 
 .search-result-info {
@@ -59,7 +59,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #34D399;
+    color: var(--accent-text);
     display: flex;
     align-items: center;
     gap: 0.25rem;
@@ -76,15 +76,15 @@
     letter-spacing: 0.6px;
     padding: 0.12rem 0.4rem;
     border-radius: 6px;
-    background: rgba(4, 120, 87, 0.15);
-    color: #10B981;
+    background: var(--chip-bg);
+    color: var(--accent-text);
     white-space: nowrap;
 }
 
 .search-result-name {
     font-size: 0.88rem;
     font-weight: 600;
-    color: #F1F5F9;
+    color: var(--text-primary);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -94,7 +94,7 @@
 
 .search-result-extra {
     font-size: 0.72rem;
-    color: #94A3B8;
+    color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

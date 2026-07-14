@@ -23,7 +23,6 @@ namespace EcoMeal.Api.Controllers
             var userId = GetCurrentUserID();
 
             var package = await _context.Package.Include(p => p.Business)
-                .Include(p => p.Orders)
                 .FirstOrDefaultAsync(p => p.Id == request.PackageId);
 
             if (package is null)
@@ -31,9 +30,12 @@ namespace EcoMeal.Api.Controllers
                 return NotFound("Package not found");
             }
 
-            if (package.Orders.Any()) {
-                return BadRequest("Package not available anymore"); 
+            if (package.NoPackages <= 0)
+            {
+                return BadRequest("Package not available anymore");
             }
+
+            package.NoPackages -= 1;
 
             var order = new Order
             {
@@ -74,7 +76,10 @@ namespace EcoMeal.Api.Controllers
                     Price = o.Package.Price,
                     BusinessId = o.Package.BusinessId,
                     BusinessName = o.Package.Business.Name,
-                    PackageName = o.Package.Name
+                    PackageName = o.Package.Name,
+                    IsReviewed = _context.Review.Any(r => r.OrderId == o.Id),
+                    ReviewRating = _context.Review.Where(r => r.OrderId == o.Id).Select(r => (int?)r.Rating).FirstOrDefault(),
+                    ReviewComment = _context.Review.Where(r => r.OrderId == o.Id).Select(r => r.Comment).FirstOrDefault()
                 }).ToListAsync();
                 
             return Ok(orders);
@@ -97,7 +102,8 @@ namespace EcoMeal.Api.Controllers
                     BusinessName = o.Package.Business.Name,
                     PackageName = o.Package.Name,
                     UserName = o.User.Name,
-                    UserContact = o.User.Contact
+                    UserContact = o.User.Contact,
+                    IsReviewed = _context.Review.Any(r => r.OrderId == o.Id)
                 }).ToListAsync();
 
             return Ok(orders);
@@ -106,17 +112,43 @@ namespace EcoMeal.Api.Controllers
         [HttpPut("{id}/status")]
         public async Task<ActionResult> UpdateOrderStatus(int id, [FromBody] string status)
         {
-            var order = await _context.Order.FindAsync(id);
+            var order = await _context.Order
+                .Include(o => o.Package)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order is null)
             {
                 return NotFound();
             }
 
+            var previousStatus = order.Status;
+            var isPreviouslyCancelled = IsCancelledStatus(previousStatus);
+            var isNowCancelled = IsCancelledStatus(status);
+
+            if (!isPreviouslyCancelled && isNowCancelled)
+            {
+                order.Package.NoPackages += 1;
+            }
+            else if (isPreviouslyCancelled && !isNowCancelled)
+            {
+                if (order.Package.NoPackages <= 0)
+                {
+                    return BadRequest("Package not available anymore");
+                }
+
+                order.Package.NoPackages -= 1;
+            }
+
             order.Status = status;
             await _context.SaveChangesAsync();
 
-            return Ok(order);
+            return NoContent();
+        }
+
+        private static bool IsCancelledStatus(string? status)
+        {
+            return string.Equals(status, "Cancelled", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(status, "Canceled", StringComparison.OrdinalIgnoreCase);
         }
 
         private int GetCurrentUserID()

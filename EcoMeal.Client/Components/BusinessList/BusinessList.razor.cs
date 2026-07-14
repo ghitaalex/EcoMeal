@@ -47,8 +47,8 @@ namespace EcoMeal.Client.Components.BusinessList
 
         private string GetChipStyle(string? type) =>
             _selectedType == type
-                ? "background: linear-gradient(135deg, #047857, #065F46); color: white; font-weight: 600;"
-                : "background: #141A2A; color: #34D399; border: 1.5px solid #1E3A2F; font-weight: 500;";
+                ? "background: linear-gradient(135deg, #059669, #059669); color: white; font-weight: 600;"
+                : "background: var(--bg-surface); color: var(--accent-text); border: 1.5px solid var(--border-color); font-weight: 500;";
 
         private string GetIconForType(string type) => type.ToLowerInvariant() switch
         {

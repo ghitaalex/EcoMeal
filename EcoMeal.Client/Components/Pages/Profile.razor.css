@@ -12,15 +12,13 @@
 ::deep .profile-card {
     width: 100%;
     max-width: 560px;
-    background: linear-gradient(135deg, rgba(20, 26, 42, 0.9), rgba(11, 15, 25, 0.95));
-    border: 1px solid rgba(5, 150, 105, 0.2);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 2.5rem;
-    backdrop-filter: blur(20px);
     box-shadow:
-        0 0 40px rgba(5, 150, 105, 0.08),
-        0 20px 60px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        0 0 40px var(--accent-subtle),
+        0 20px 60px var(--card-shadow);
     animation: cardEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -44,24 +42,24 @@
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #059669, #34D399);
+    background: var(--gradient-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.25rem;
     color: white;
-    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.3);
+    box-shadow: var(--glow-md);
 }
 
 ::deep .profile-header h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #F1F5F9;
+    color: var(--text-primary);
     margin-bottom: 0.35rem;
 }
 
 ::deep .profile-subtitle {
-    color: #64748B;
+    color: var(--text-dim);
     font-size: 0.9rem;
     margin: 0;
 }
@@ -90,9 +88,9 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(5, 150, 105, 0.1);
-    border: 1px solid rgba(5, 150, 105, 0.3);
-    color: #6EE7B7;
+    background: var(--accent-subtle);
+    border: 1px solid rgba(63, 158, 113, 0.3);
+    color: var(--accent-text);
     padding: 0.75rem 1rem;
     border-radius: 10px;
     font-size: 0.85rem;
@@ -131,12 +129,12 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    background: rgba(5, 150, 105, 0.1);
-    border: 1px solid rgba(5, 150, 105, 0.2);
+    background: var(--accent-subtle);
+    border: 1px solid var(--chip-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #34D399;
+    color: var(--accent-text);
     flex-shrink: 0;
 }
 
@@ -157,7 +155,7 @@
 
 ::deep .info-value {
     font-size: 0.95rem;
-    color: #F1F5F9;
+    color: var(--text-primary);
     font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -178,9 +176,9 @@
     border-radius: 20px;
     font-size: 0.78rem;
     font-weight: 600;
-    background: rgba(5, 150, 105, 0.15);
-    border: 1px solid rgba(5, 150, 105, 0.3);
-    color: #34D399;
+    background: var(--chip-bg);
+    border: 1px solid var(--chip-border);
+    color: var(--accent-text);
 }
 
 ::deep .profile-btn {
@@ -193,7 +191,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #059669, #047857);
+    background: var(--gradient-primary);
     color: white;
     border: none;
     transition: all 0.3s ease;
@@ -219,7 +217,7 @@
 
 ::deep .profile-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+    box-shadow: var(--glow-md);
 }
 
 ::deep .profile-btn:active {
@@ -276,7 +274,7 @@
 }
 
 ::deep .auth-field:focus-within .input-icon {
-    color: #34D399;
+    color: var(--accent-text);
 }
 
 ::deep .auth-input {
@@ -288,7 +286,7 @@
 }
 
 ::deep .auth-input:hover {
-    border-color: #2D4A3F;
+    border-color: var(--hover-border);
 }
 
 ::deep .auth-input::placeholder {
@@ -316,24 +314,24 @@
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: rgba(5, 150, 105, 0.1);
-    border: 1px solid rgba(5, 150, 105, 0.2);
+    background: var(--accent-subtle);
+    border: 1px solid var(--chip-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #34D399;
+    color: var(--accent-text);
     flex-shrink: 0;
 }
 
 ::deep .orders-header h3 {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #F1F5F9;
+    color: var(--text-primary);
     margin: 0 0 0.15rem;
 }
 
 ::deep .orders-subtitle {
-    color: #64748B;
+    color: var(--text-dim);
     font-size: 0.825rem;
     margin: 0;
 }
@@ -344,10 +342,10 @@
     align-items: center;
     text-align: center;
     padding: 2rem 1rem;
-    color: #475569;
-    border: 1px dashed rgba(71, 85, 105, 0.3);
+    color: var(--text-dim);
+    border: 1px dashed var(--border-color);
     border-radius: 12px;
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--accent-subtle);
 }
 
 ::deep .orders-empty svg {
@@ -358,13 +356,118 @@
 ::deep .orders-empty p {
     font-size: 0.95rem;
     font-weight: 600;
-    color: #64748B;
+    color: var(--text-muted);
     margin: 0 0 0.25rem;
 }
 
 ::deep .orders-empty span {
     font-size: 0.825rem;
-    color: #475569;
+    color: var(--text-dim);
+}
+
+::deep .orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+::deep .order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--accent-subtle);
+    transition: border-color 0.2s ease;
+}
+
+::deep .order-item:hover {
+    border-color: var(--hover-border);
+}
+
+::deep .order-item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+::deep .order-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+::deep .order-status-dot.status-completed {
+    background: var(--accent);
+    box-shadow: 0 0 6px rgba(63, 158, 113, 0.5);
+}
+
+::deep .order-status-dot.status-pending {
+    background: #F59E0B;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+::deep .order-status-dot.status-cancelled {
+    background: #EF4444;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+}
+
+::deep .order-item-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+::deep .order-item-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+::deep .order-item-business {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+::deep .order-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+::deep .order-item-price {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--accent-text);
+}
+
+::deep .order-item-date {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+}
+
+::deep .orders-view-all {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.6rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-text);
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+::deep .orders-view-all:hover {
+    background: var(--accent-subtle);
 }
 
 @media (max-width: 500px) {

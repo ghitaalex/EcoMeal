@@ -1,9 +1,11 @@
 @page "/profile"
+@using EcoMeal.Client.Models
 @using EcoMeal.Client.Models.Auth
 @using EcoMeal.Client.Services
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @inject AuthService AuthService
+@inject OrderService OrderService
 @inject NavigationManager Navigation
 
 <PageTitle>Profile</PageTitle>
@@ -145,21 +147,55 @@
             </div>
             <div>
                 <h3>Order History</h3>
-                <p class="orders-subtitle">Your past orders will appear here</p>
+                <p class="orders-subtitle">@(orders?.Count > 0 ? $"{orders.Count} order(s)" : "Your past orders will appear here")</p>
             </div>
         </div>
-        <div class="orders-empty">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-            <p>No orders yet</p>
-            <span>When you place orders, they'll show up here.</span>
-        </div>
+
+        @if (ordersLoading)
+        {
+            <div class="profile-loading">
+                <MudProgressCircular Color="Color.Success" Size="Size.Small" Indeterminate="true" />
+            </div>
+        }
+        else if (orders == null || !orders.Any())
+        {
+            <div class="orders-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                <p>No orders yet</p>
+                <span>When you place orders, they'll show up here.</span>
+            </div>
+        }
+        else
+        {
+            <div class="orders-list">
+                @foreach (var order in orders.OrderByDescending(o => o.Date))
+                {
+                    <div class="order-item">
+                        <div class="order-item-left">
+                            <div class="order-status-dot @GetStatusClass(order.Status)"></div>
+                            <div class="order-item-info">
+                                <span class="order-item-name">@order.PackageName</span>
+                                <span class="order-item-business">@order.BusinessName</span>
+                            </div>
+                        </div>
+                        <div class="order-item-right">
+                            <span class="order-item-price">@order.Price.ToString("0.00") RON</span>
+                            <span class="order-item-date">@order.Date.ToLocalTime().ToString("dd MMM")</span>
+                        </div>
+                    </div>
+                }
+            </div>
+            <a href="/orders" class="orders-view-all">View all orders →</a>
+        }
     </div>
 </div>
 
 @code {
     private UserMeResponse? profile;
+    private List<OrderGetModel>? orders;
     private ProfileUpdateModel editModel = new();
     private bool isLoading = true;
+    private bool ordersLoading = true;
     private bool isEditing;
     private bool isSaving;
     private string? errorMessage;
@@ -171,6 +207,17 @@
         {
             profile = await AuthService.GetProfileAsync();
             isLoading = false;
+            StateHasChanged();
+
+            try
+            {
+                orders = await OrderService.GetMyOrderAsync();
+            }
+            catch
+            {
+                orders = new();
+            }
+            ordersLoading = false;
             StateHasChanged();
         }
     }
@@ -213,4 +260,12 @@
 
         isSaving = false;
     }
+
+    private string GetStatusClass(string status) => status?.ToLower() switch
+    {
+        "completed" => "status-completed",
+        "pending" => "status-pending",
+        "cancelled" => "status-cancelled",
+        _ => "status-pending"
+    };
 }

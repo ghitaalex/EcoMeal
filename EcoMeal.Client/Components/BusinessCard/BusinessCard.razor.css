@@ -1,12 +1,12 @@
 .business-card {
     position: relative;
-    background: #141A2A;
+    background: var(--bg-surface);
     border-radius: 20px;
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
-    border: 1px solid #1E3A2F;
+    box-shadow: 0 2px 16px var(--card-shadow);
+    border: 1px solid var(--border-color);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -14,8 +14,8 @@
 
 .business-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 40px rgba(4, 120, 87, 0.15);
-    border-color: #047857;
+    box-shadow: 0 12px 40px rgba(29, 73, 52, 0.2);
+    border-color: var(--hover-border);
 }
 
 .card-hero {
@@ -30,7 +30,7 @@
 .card-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(4, 120, 87, 0.1) 0%, rgba(4, 120, 87, 0.75) 100%);
+    background: var(--gradient-hero);
     border-radius: 20px 20px 0 0;
 }
 
@@ -47,7 +47,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    background: rgba(4, 120, 87, 0.25);
+    background: rgba(29, 73, 52, 0.35);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(4px);
@@ -95,7 +95,7 @@
 
 .hero-chip i {
     font-size: 0.68rem;
-    color: #10B981;
+    color: var(--color-lightest);
 }
 
 .card-content {
@@ -117,17 +117,17 @@
     gap: 0.5rem;
     font-size: 0.82rem;
     font-weight: 500;
-    color: #CBD5E1;
+    color: var(--text-secondary);
 }
 
 .package-info-item i {
-    color: #34D399;
+    color: var(--accent);
     font-size: 0.8rem;
 }
 
 .no-packages-text {
     font-size: 0.82rem;
-    color: #94A3B8;
+    color: var(--text-muted);
     margin: 0;
     font-style: italic;
 }
@@ -139,15 +139,15 @@
 .card-actions {
     margin-top: auto;
     padding-top: 1rem;
-    border-top: 1px solid #1E3A2F;
+    border-top: 1px solid var(--border-color);
     display: flex;
     gap: 0.5rem;
 }
 
 .btn-edit {
     background: none;
-    border: 1.5px solid #1E3A2F;
-    color: #10B981;
+    border: 1.5px solid var(--border-color);
+    color: var(--accent);
     padding: 0.4rem 1rem;
     border-radius: 10px;
     font-size: 0.8rem;
@@ -158,8 +158,8 @@
 
 .btn-edit:hover {
     background: rgba(4, 120, 87, 0.1);
-    border-color: #047857;
-    color: #34D399;
+    border-color: var(--hover-border);
+    color: var(--accent-text);
 }
 
 .btn-delete {

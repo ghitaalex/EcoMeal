@@ -10,15 +10,13 @@
 ::deep .auth-card {
     width: 100%;
     max-width: 560px;
-    background: linear-gradient(135deg, rgba(20, 26, 42, 0.9), rgba(11, 15, 25, 0.95));
-    border: 1px solid rgba(5, 150, 105, 0.2);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 2.5rem;
-    backdrop-filter: blur(20px);
     box-shadow:
-        0 0 40px rgba(5, 150, 105, 0.08),
-        0 20px 60px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        0 0 40px var(--accent-subtle),
+        0 20px 60px var(--card-shadow);
     animation: cardEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -42,24 +40,24 @@
     width: 60px;
     height: 60px;
     border-radius: 16px;
-    background: linear-gradient(135deg, #059669, #34D399);
+    background: var(--gradient-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.25rem;
     color: white;
-    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.3);
+    box-shadow: var(--glow-lg);
 }
 
 ::deep .auth-header h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #F1F5F9;
+    color: var(--text-primary);
     margin-bottom: 0.35rem;
 }
 
 ::deep .auth-subtitle {
-    color: #64748B;
+    color: var(--text-dim);
     font-size: 0.9rem;
     margin: 0;
 }
@@ -102,7 +100,7 @@
 }
 
 ::deep .auth-field:focus-within .input-icon {
-    color: #34D399;
+    color: var(--accent-text);
 }
 
 ::deep .auth-input {
@@ -114,7 +112,7 @@
 }
 
 ::deep .auth-input:hover {
-    border-color: #2D4A3F;
+    border-color: var(--hover-border);
 }
 
 ::deep .auth-input::placeholder {
@@ -124,9 +122,9 @@
 ::deep .auth-input:-webkit-autofill,
 ::deep .auth-input:-webkit-autofill:hover,
 ::deep .auth-input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #F1F5F9;
-    -webkit-box-shadow: 0 0 0 1000px #141A2A inset;
-    border-color: #1E3A2F;
+    -webkit-text-fill-color: var(--text-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset;
+    border-color: var(--border-color);
     transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -151,7 +149,7 @@
     justify-content: center;
     gap: 0.5rem;
     margin-top: 0.5rem;
-    background: linear-gradient(135deg, #059669, #047857);
+    background: var(--gradient-primary);
     color: white;
     border: none;
     transition: all 0.3s ease;
@@ -176,7 +174,7 @@
 
 ::deep .auth-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+    box-shadow: var(--glow-md);
 }
 
 ::deep .auth-btn:active {
@@ -195,7 +193,7 @@
     text-align: center;
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border-color);
     font-size: 0.875rem;
 }
 
@@ -204,7 +202,7 @@
 }
 
 ::deep .auth-footer a {
-    color: #34D399;
+    color: var(--accent-text);
     font-weight: 600;
     text-decoration: none;
     margin-left: 0.35rem;
@@ -212,7 +210,7 @@
 }
 
 ::deep .auth-footer a:hover {
-    color: #6EE7B7;
+    color: var(--accent-text);
 }
 
 ::deep .validation-message {

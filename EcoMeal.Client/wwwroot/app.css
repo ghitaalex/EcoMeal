@@ -1,37 +1,189 @@
+:root, .theme-dark {
+    /* Base palette */
+    --color-darkest: #1d4934;
+    --color-base: #3f9e71;
+    --color-lightest: #61f3ad;
+
+    /* Shades (base + black) */
+    --shade-10: #398e65;
+    --shade-20: #327e5a;
+    --shade-30: #2c6f4f;
+    --shade-40: #265f44;
+    --shade-50: #204f39;
+    --shade-60: #193f2d;
+    --shade-70: #132f22;
+    --shade-80: #0d2017;
+    --shade-90: #06100b;
+
+    /* Tints (base + white) */
+    --tint-10: #52a87f;
+    --tint-20: #65b18d;
+    --tint-30: #79bb9b;
+    --tint-40: #8cc5a9;
+    --tint-50: #9fcfb8;
+    --tint-60: #b2d9c6;
+    --tint-70: #c5e3d4;
+    --tint-80: #d9ece2;
+    --tint-90: #ecf6f1;
+
+    /* Semantic tokens */
+    --bg-page: var(--shade-90);
+    --bg-surface: var(--shade-80);
+    --bg-elevated: var(--shade-70);
+    --bg-appbar: var(--shade-80);
+    --border-color: var(--shade-60);
+    --border-subtle: var(--shade-70);
+    --text-primary: #F1F5F9;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --text-dim: #64748B;
+    --accent: var(--color-base);
+    --accent-light: var(--color-lightest);
+    --accent-dark: var(--color-darkest);
+    --accent-text: var(--color-lightest);
+    --accent-hover: var(--tint-10);
+    --accent-subtle: rgba(63, 158, 113, 0.12);
+    --card-shadow: rgba(0, 0, 0, 0.3);
+    --chip-bg: rgba(63, 158, 113, 0.12);
+    --chip-border: rgba(97, 243, 173, 0.15);
+    --status-completed-bg: rgba(63, 158, 113, 0.15);
+    --status-pending-bg: rgba(245, 158, 11, 0.15);
+    --status-cancelled-bg: rgba(239, 68, 68, 0.15);
+    --input-bg: var(--shade-80);
+    --input-border: var(--shade-60);
+    --input-focus: var(--color-base);
+    --hover-border: var(--color-base);
+    --gradient-primary: linear-gradient(135deg, var(--color-darkest), var(--color-base));
+    --gradient-accent: linear-gradient(135deg, var(--color-base), var(--color-lightest));
+    --gradient-default: linear-gradient(135deg, var(--shade-70) 0%, var(--shade-50) 100%);
+    --gradient-surface: linear-gradient(135deg, var(--shade-90) 0%, var(--shade-70) 100%);
+    --gradient-hero: linear-gradient(180deg, rgba(29, 73, 52, 0.1) 0%, rgba(29, 73, 52, 0.85) 100%);
+    --glow-sm: 0 4px 12px rgba(63, 158, 113, 0.2);
+    --glow-md: 0 8px 24px rgba(63, 158, 113, 0.3);
+    --glow-lg: 0 12px 40px rgba(63, 158, 113, 0.4);
+}
+
+.theme-light {
+    /* Base palette */
+    --color-darkest: #1d4934;
+    --color-base: #3f9e71;
+    --color-lightest: #61f3ad;
+
+    /* Shades (base + black) */
+    --shade-10: #398e65;
+    --shade-20: #327e5a;
+    --shade-30: #2c6f4f;
+    --shade-40: #265f44;
+    --shade-50: #204f39;
+    --shade-60: #193f2d;
+    --shade-70: #132f22;
+    --shade-80: #0d2017;
+    --shade-90: #06100b;
+
+    /* Tints (base + white) */
+    --tint-10: #52a87f;
+    --tint-20: #65b18d;
+    --tint-30: #79bb9b;
+    --tint-40: #8cc5a9;
+    --tint-50: #9fcfb8;
+    --tint-60: #b2d9c6;
+    --tint-70: #c5e3d4;
+    --tint-80: #d9ece2;
+    --tint-90: #ecf6f1;
+
+    /* Semantic tokens - light mode overrides */
+    --bg-page: var(--tint-90);
+    --bg-surface: #FFFFFF;
+    --bg-elevated: var(--tint-80);
+    --bg-appbar: #FFFFFF;
+    --border-color: var(--tint-70);
+    --border-subtle: var(--tint-80);
+    --text-primary: var(--shade-80);
+    --text-secondary: var(--shade-50);
+    --text-muted: var(--shade-30);
+    --text-dim: var(--tint-30);
+    --accent: var(--color-base);
+    --accent-light: var(--tint-10);
+    --accent-dark: var(--color-darkest);
+    --accent-text: var(--color-darkest);
+    --accent-hover: var(--shade-10);
+    --accent-subtle: rgba(63, 158, 113, 0.08);
+    --card-shadow: rgba(29, 73, 52, 0.06);
+    --chip-bg: rgba(63, 158, 113, 0.08);
+    --chip-border: rgba(63, 158, 113, 0.2);
+    --status-completed-bg: rgba(63, 158, 113, 0.1);
+    --status-pending-bg: rgba(245, 158, 11, 0.1);
+    --status-cancelled-bg: rgba(239, 68, 68, 0.1);
+    --input-bg: var(--tint-90);
+    --input-border: var(--tint-60);
+    --input-focus: var(--color-base);
+    --hover-border: var(--color-base);
+    --gradient-primary: linear-gradient(135deg, var(--color-darkest), var(--color-base));
+    --gradient-accent: linear-gradient(135deg, var(--color-base), var(--tint-20));
+    --gradient-default: linear-gradient(135deg, var(--tint-60) 0%, var(--tint-40) 100%);
+    --gradient-surface: linear-gradient(135deg, var(--tint-90) 0%, var(--tint-70) 100%);
+    --gradient-hero: linear-gradient(180deg, rgba(29, 73, 52, 0.3) 0%, rgba(29, 73, 52, 0.85) 100%);
+    --glow-sm: 0 4px 12px rgba(29, 73, 52, 0.1);
+    --glow-md: 0 8px 24px rgba(29, 73, 52, 0.15);
+    --glow-lg: 0 12px 40px rgba(29, 73, 52, 0.2);
+}
+
 html, body {
     font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background: #0B0F19;
-    color: #F1F5F9;
+    background: var(--bg-page);
+    color: var(--text-primary);
 }
 
 a, .btn-link {
-    color: #34D399;
+    color: var(--accent-text);
 }
 
 .btn-primary {
     color: #fff;
-    background-color: #059669;
-    border-color: #047857;
+    background: var(--gradient-primary);
+    border-color: var(--accent-dark);
 }
 
+.btn-primary:hover {
+    box-shadow: var(--glow-sm);
+}
+
+.btn,
+.mud-button-root,
+.mud-icon-button-root {
+    opacity: 0.75;
+    transition: opacity 0.2s ease;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active,
+.mud-button-root:hover,
+.mud-button-root:focus,
+.mud-button-root:active,
+.mud-icon-button-root:hover,
+.mud-icon-button-root:focus,
+.mud-icon-button-root:active {
+    opacity: 1;
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem #0B0F19, 0 0 0 0.25rem #059669;
+  box-shadow: 0 0 0 0.1rem var(--bg-page), 0 0 0 0.25rem var(--accent);
 }
 
 .form-control {
-    background: #141A2A;
-    border-color: #1E3A2F;
-    color: #F1F5F9;
+    background: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
 }
 
 .form-control:focus {
-    border-color: #059669;
-    background: #1C2333;
-    color: #F1F5F9;
+    border-color: var(--input-focus);
+    background: var(--input-bg);
+    color: var(--text-primary);
 }
 
 .form-label {
-    color: #94A3B8;
+    color: var(--text-muted);
 }
 
 .content {
@@ -43,7 +195,7 @@ h1:focus {
 }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #059669;
+    outline: 1px solid var(--accent);
 }
 
 .invalid {
@@ -79,18 +231,18 @@ h1:focus {
 
 .navbar-search {
     width: 100%;
-    max-width: 420px;
+    max-width: 520px;
     min-width: 0;
 }
 
 @media (max-width: 600px) {
     .navbar-search {
-        max-width: 200px;
+        max-width: 240px;
     }
 }
 
 @media (min-width: 960px) {
     .navbar-search {
-        max-width: 420px;
+        max-width: 680px;
     }
 }

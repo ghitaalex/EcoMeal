@@ -42,6 +42,7 @@ namespace EcoMeal.Client.Services
             content.Add(new StringContent(package.Name), "Name");
             content.Add(new StringContent(package.Description), "Description");
             content.Add(new StringContent(package.Price.ToString()), "Price");
+            content.Add(new StringContent(package.NoPackages.ToString()), "NoPackages");
             content.Add(new StringContent(package.StartPickup.ToString("o")), "StartPickup");
             content.Add(new StringContent(package.EndPickup.ToString("o")), "EndPickup");
             content.Add(new StringContent(package.PackageTypeId.ToString()), "PackageTypeId");

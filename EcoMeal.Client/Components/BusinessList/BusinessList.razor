@@ -1,4 +1,4 @@
-﻿@namespace EcoMeal.Client.Components.BusinessList
+@namespace EcoMeal.Client.Components.BusinessList
 @using EcoMeal.Client.Components.BusinessCard
 @using EcoMeal.Client.Models
 @if (Businesses is null)
@@ -6,16 +6,18 @@
     <p>Loading... </p>
 }
 else {
-    <div class="d-flex flex-wrap gap-3 align-center mb-4">
-        <MudChip T="string" Icon="@Icons.Material.Filled.AllInclusive" Color="@GetChipColor(null)" Variant="Variant.Filled" Style="@GetChipStyle(null)" OnClick="() => SelectFilter(null)">All</MudChip>
-        @foreach (var type in BusinessTypes)
-        {
-            <MudChip T="string" Icon="@GetIconForType(type)" Color="@GetChipColor(type)" Variant="Variant.Filled" Style="@GetChipStyle(type)" OnClick="() => SelectFilter(type)">@type</MudChip>
-        }
+    <div class="d-flex align-items-center mb-4">
+        <div class="d-flex flex-wrap gap-3 align-center justify-center flex-grow-1">
+            <MudChip T="string" Icon="@Icons.Material.Filled.AllInclusive" Color="@GetChipColor(null)" Variant="Variant.Filled" Style="@GetChipStyle(null)" OnClick="() => SelectFilter(null)">All</MudChip>
+            @foreach (var type in BusinessTypes)
+            {
+                <MudChip T="string" Icon="@GetIconForType(type)" Color="@GetChipColor(type)" Variant="Variant.Filled" Style="@GetChipStyle(type)" OnClick="() => SelectFilter(type)">@type</MudChip>
+            }
+        </div>
         <AuthorizeView Roles="Admin">
-            <div style="margin-left: auto;">
+            <div class="ms-3">
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                           Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; padding: 0.5rem 1.25rem; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
+                           Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; padding: 0.5rem 1.25rem; box-shadow: var(--glow-sm);"
                            Href="/business/add">
                     Add Business
                 </MudButton>

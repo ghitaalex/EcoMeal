@@ -1,24 +1,27 @@
-﻿@using EcoMeal.Client.Services
+@using EcoMeal.Client.Services
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
-<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+@inject IJSRuntime JS
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudLayout>
-    <MudAppBar Elevation="0" Fixed="true" Style="background: #111827; color: #F1F5F9; border-bottom: 1px solid #1E3A2F;">
+<MudLayout Class="@(_isDarkMode ? "theme-dark" : "theme-light")">
+    <MudAppBar Elevation="0" Fixed="true" Style="@($"background: var(--bg-appbar); color: var(--text-primary); border-bottom: 1px solid var(--border-color);")">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
-        <MudButton Href="/" Variant="Variant.Text" Class="brand-btn" Style="text-transform: none; color: #F1F5F9; font-size: 1.25rem; font-family: 'Inter', sans-serif; min-width: auto; padding: 0 0.5rem;">
-            <MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" Style="color: #059669; margin-right: 0.25rem;" />
-            <span class="brand-text d-none d-sm-inline"><span style="font-weight: 300;">Eco</span><span style="font-weight: 800; color: #34D399;">Meal</span></span>
+        <MudButton Href="/" Variant="Variant.Text" Class="brand-btn" Style="text-transform: none; color: var(--text-primary); font-size: 1.25rem; font-family: 'Inter', sans-serif; min-width: auto; padding: 0 0.5rem;">
+            <MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" Style="color: var(--accent); margin-right: 0.25rem;" />
+            <span class="brand-text d-none d-sm-inline"><span style="font-weight: 300;">Eco</span><span style="font-weight: 800; color: var(--accent-text);">Meal</span></span>
         </MudButton>
         <MudSpacer />
-        <div class="navbar-search">
+        <div class="navbar-search" style="flex: 3; max-width: 900px; min-width: 0; width: 100%;">
             <SearchDropdown />
         </div>
         <MudSpacer />
+        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+                       Color="Color.Inherit" OnClick="ToggleTheme" Title="Toggle theme" />
         <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" Href="/orders" />
         @if (AuthService.IsAuthenticated)
         {
@@ -26,15 +29,15 @@
                      Class="profile-menu-btn">
                 <ChildContent>
                     <div style="padding: 1rem 1.25rem 0.75rem; text-align: center; min-width: 200px;">
-                        <MudAvatar Color="Color.Success" Size="Size.Large" Style="margin: 0 auto 0.5rem; background: linear-gradient(135deg, #059669, #34D399);">
+                        <MudAvatar Color="Color.Success" Size="Size.Large" Style="margin: 0 auto 0.5rem; background: var(--gradient-primary);">
                             <MudIcon Icon="@Icons.Material.Filled.Person" />
                         </MudAvatar>
-                        <MudText Typo="Typo.subtitle1" Style="color: #F1F5F9; font-weight: 600;">@(AuthService.UserName ?? "User")</MudText>
-                        <MudText Typo="Typo.caption" Style="color: #64748B;">Welcome back!</MudText>
+                        <MudText Typo="Typo.subtitle1" Style="font-weight: 600;">@(AuthService.UserName ?? "User")</MudText>
+                        <MudText Typo="Typo.caption" Style="color: var(--text-dim);">Welcome back!</MudText>
                     </div>
-                    <MudDivider Style="border-color: #1E3A2F;" />
-                    <MudMenuItem Href="/profile" Icon="@Icons.Material.Outlined.AccountCircle" IconColor="Color.Success" Style="color: #F1F5F9;">Profile</MudMenuItem>
-                    <MudMenuItem OnClick="HandleLogout" Icon="@Icons.Material.Outlined.Logout" IconColor="Color.Error" Style="color: #FCA5A5;">Logout</MudMenuItem>
+                    <MudDivider Style="border-color: var(--border-color);" />
+                    <MudMenuItem Href="/profile" Icon="@Icons.Material.Outlined.AccountCircle" IconColor="Color.Success">Profile</MudMenuItem>
+                    <MudMenuItem OnClick="HandleLogout" Icon="@Icons.Material.Outlined.Logout" IconColor="Color.Error" Style="color: #EF4444;">Logout</MudMenuItem>
                 </ChildContent>
             </MudMenu>
         }
@@ -45,19 +48,40 @@
             </MudButton>
         }
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Style="background: #111827; border-right: 1px solid #1E3A2F;">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Style="background: var(--bg-appbar); border-right: 1px solid var(--border-color);">
         <NavMenu />
     </MudDrawer>
-    <MudMainContent Class="pa-4" Style="margin-top: 48px; background: #0B0F19; min-height: 100vh;">
+    <MudMainContent Class="pa-4" Style="margin-top: 48px; background: var(--bg-page); min-height: 100vh;">
         @Body
     </MudMainContent>
 </MudLayout>
 
 @code {
     private bool _drawerOpen = false;
+    private bool _isDarkMode = true;
 
     private MudTheme _theme = new()
     {
+        PaletteLight = new PaletteLight()
+        {
+            Black = "#1E293B",
+            Background = "#F8FAFC",
+            Surface = "#FFFFFF",
+            DrawerBackground = "#FFFFFF",
+            AppbarBackground = "#FFFFFF",
+            TextPrimary = "#1E293B",
+            TextSecondary = "#64748B",
+            TextDisabled = "#94A3B8",
+            ActionDefault = "#64748B",
+            Primary = "#3f9e71",
+            Secondary = "#3f9e71",
+            Success = "#3f9e71",
+            Info = "#3f9e71",
+            LinesDefault = "#E2E8F0",
+            LinesInputs = "#CBD5E1",
+            Divider = "#E2E8F0",
+            DividerLight = "#F1F5F9",
+        },
         PaletteDark = new PaletteDark()
         {
             Black = "#0B0F19",
@@ -69,14 +93,14 @@
             TextSecondary = "#94A3B8",
             TextDisabled = "#64748B",
             ActionDefault = "#94A3B8",
-            Primary = "#059669",
-            Secondary = "#047857",
-            Success = "#059669",
-            Info = "#059669",
-            LinesDefault = "#1E3A2F",
-            LinesInputs = "#1E3A2F",
-            Divider = "#1E3A2F",
-            DividerLight = "#1E3A2F",
+            Primary = "#3f9e71",
+            Secondary = "#3f9e71",
+            Success = "#3f9e71",
+            Info = "#3f9e71",
+            LinesDefault = "#193f2d",
+            LinesInputs = "#193f2d",
+            Divider = "#193f2d",
+            DividerLight = "#193f2d",
         }
     };
 
@@ -85,18 +109,31 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-{
-    if (firstRender)
+    private async Task ToggleTheme()
     {
-        await AuthService.LoadTokenAsync();
-        StateHasChanged();
+        _isDarkMode = !_isDarkMode;
+        await JS.InvokeVoidAsync("localStorage.setItem", "theme", _isDarkMode ? "dark" : "light");
+        await JS.InvokeVoidAsync("eval", $"document.documentElement.className = '{(_isDarkMode ? "theme-dark" : "theme-light")}'");
     }
-}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthService.LoadTokenAsync();
+            var stored = await JS.InvokeAsync<string?>("localStorage.getItem", "theme");
+            if (stored == "light")
+            {
+                _isDarkMode = false;
+            }
+            await JS.InvokeVoidAsync("eval", $"document.documentElement.className = '{(_isDarkMode ? "theme-dark" : "theme-light")}'");
+            StateHasChanged();
+        }
+    }
 
     private async Task HandleLogout()
     {
         await AuthService.LogoutAsync();
         NavigationManager.NavigateTo("/", forceLoad: true);
-}
+    }
 }

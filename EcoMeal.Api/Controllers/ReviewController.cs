@@ -26,12 +26,14 @@ namespace EcoMeal.Api.Controllers
 
             var order = await _context.Order
                 .Include(o => o.Package)
-                .Where(o => o.UserId == userId && o.Package.BusinessId == request.BusinessId)
+                .Where(o => o.Id == request.OrderId
+                            && o.UserId == userId
+                            && o.Package.BusinessId == request.BusinessId)
                 .FirstOrDefaultAsync();
 
             if (order is null)
             {
-                return BadRequest("No order found for this business.");
+                return BadRequest("No matching order found for this business.");
             }
 
             if (!order.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
@@ -59,7 +61,7 @@ namespace EcoMeal.Api.Controllers
             _context.Review.Add(review);
             await _context.SaveChangesAsync();
 
-            return Ok(review);
+            return Ok(new { review.Id, review.Rating, review.Comment, review.CreatedAt });
         }
 
         [HttpGet("business/{businessId}")]

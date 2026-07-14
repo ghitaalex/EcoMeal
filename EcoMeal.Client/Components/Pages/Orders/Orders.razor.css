@@ -1,5 +1,5 @@
 ::deep .orders-timeline .mud-timeline-item-dot {
-    box-shadow: 0 0 12px rgba(5, 150, 105, 0.3);
+    box-shadow: var(--glow-sm);
 }
 
 ::deep .order-card {
@@ -8,19 +8,19 @@
 
 ::deep .order-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(5, 150, 105, 0.12);
-    border-color: #047857 !important;
+    box-shadow: var(--glow-sm);
+    border-color: var(--accent) !important;
 }
 
 ::deep .order-card-header {
-    background: rgba(5, 150, 105, 0.04);
+    background: var(--accent-subtle);
 }
 
 ::deep .order-card-footer {
-    background: rgba(5, 150, 105, 0.04);
-    border-top: 1px solid #1E3A2F;
+    background: var(--accent-subtle);
+    border-top: 1px solid var(--border-color);
 }
 
 ::deep .mud-timeline-item .mud-timeline-item-connector {
-    background-color: #1E3A2F;
+    background-color: var(--border-color);
 }

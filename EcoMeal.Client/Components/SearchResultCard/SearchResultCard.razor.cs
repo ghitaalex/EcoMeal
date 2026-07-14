@@ -15,7 +15,7 @@ namespace EcoMeal.Client.Components.SearchResultCard
         {
             if (!string.IsNullOrEmpty(Result.ImageUrl))
                 return $"background-image: url('{Result.ImageUrl}');";
-            return "background: linear-gradient(135deg, #0B0F19 0%, #047857 100%);";
+            return "background: linear-gradient(135deg, #0B0F19 0%, #059669 100%);";
         }
 
         private string GetIcon() => Result.ResultType == "Business" ? "bi bi-shop" : "bi bi-box-seam";

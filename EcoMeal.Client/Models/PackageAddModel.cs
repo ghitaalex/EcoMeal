@@ -14,6 +14,9 @@ namespace EcoMeal.Client.Models
         [Range(0.01, 1000, ErrorMessage = "Price must be between 0.01 and 1000")]
         public double Price { get; set; }
         [Required]
+        [Range(1, 100000, ErrorMessage = "Number of packages must be at least 1")]
+        public int NoPackages { get; set; }
+        [Required]
         public DateTime StartPickup { get; set; }
         [Required]
         public DateTime EndPickup { get; set; }

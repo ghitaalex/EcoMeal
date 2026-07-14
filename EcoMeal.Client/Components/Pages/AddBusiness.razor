@@ -8,14 +8,14 @@
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack"
-               Style="text-transform: none; color: #34D399; font-weight: 600; margin-bottom: 1rem;"
+               Style="text-transform: none; color: var(--accent-text); font-weight: 600; margin-bottom: 1rem;"
                Href="/">
         Back to Businesses
     </MudButton>
 
-    <MudPaper Class="pa-8" Elevation="0" Style="border: 1.5px solid #1E3A2F; border-radius: 24px; background: #141A2A;">
-        <MudText Typo="Typo.h5" Style="font-weight: 800; margin-bottom: 0.5rem; color: #34D399;">Add Business</MudText>
-        <MudText Typo="Typo.body2" Style="color: #94A3B8; margin-bottom: 2rem;">Register a new business on the platform.</MudText>
+    <MudPaper Class="pa-8" Elevation="0" Style="border: 1.5px solid var(--border-color); border-radius: 24px; background: var(--bg-surface);">
+        <MudText Typo="Typo.h5" Style="font-weight: 800; margin-bottom: 0.5rem; color: var(--accent-text);">Add Business</MudText>
+        <MudText Typo="Typo.body2" Style="color: var(--text-muted); margin-bottom: 2rem;">Register a new business on the platform.</MudText>
 
         <EditForm Model="Model" OnValidSubmit="HandleSubmit">
             <DataAnnotationsValidator />
@@ -67,18 +67,18 @@
             </MudSelect>
 
             <MudStack Class="mb-6">
-                <MudText Typo="Typo.body2" Style="color: #94A3B8; margin-bottom: 0.5rem;">Image (optional)</MudText>
+                <MudText Typo="Typo.body2" Style="color: var(--text-muted); margin-bottom: 0.5rem;">Image (optional)</MudText>
                 <InputFile OnChange="OnImageSelected" accept=".png,.jpg,.jpeg,.webp" class="form-control" />
                 @if (SelectedImage is not null)
                 {
-                    <MudText Typo="Typo.caption" Style="color: #94A3B8;">@SelectedImage.Name</MudText>
+                    <MudText Typo="Typo.caption" Style="color: var(--text-muted);">@SelectedImage.Name</MudText>
                 }
             </MudStack>
 
             <MudButton ButtonType="ButtonType.Submit"
                        Variant="Variant.Filled"
                        FullWidth="true"
-                       Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; font-size: 1rem; padding: 0.75rem; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
+                       Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 700; font-size: 1rem; padding: 0.75rem; border-radius: 12px; box-shadow: var(--glow-sm);"
                        Size="MudBlazor.Size.Large">
                 Create Business
             </MudButton>

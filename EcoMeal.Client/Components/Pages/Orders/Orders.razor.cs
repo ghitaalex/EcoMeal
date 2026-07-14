@@ -23,10 +23,15 @@ public partial class Orders
     private string? _newComment;
     private bool _submittingReview;
     private HashSet<int> _reviewedOrderIds = new();
+    private Dictionary<int, (int Rating, string? Comment)> _submittedReviews = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        MyOrders = await OrderService.GetMyOrderAsync();
+        if (firstRender)
+        {
+            MyOrders = await OrderService.GetMyOrderAsync();
+            StateHasChanged();
+        }
     }
 
     private void StartReview(int orderId)
@@ -43,13 +48,14 @@ public partial class Orders
         _newComment = null;
     }
 
-    private async Task SubmitReview(int businessId)
+    private async Task SubmitReview(int orderId, int businessId)
     {
         _submittingReview = true;
         StateHasChanged();
 
         var request = new ReviewRequest
         {
+            OrderId = orderId,
             BusinessId = businessId,
             Rating = _newRating,
             Review = _newComment
@@ -59,14 +65,24 @@ public partial class Orders
         if (success)
         {
             Snackbar.Add("Review submitted!", Severity.Success);
-            if (_reviewingOrderId.HasValue)
-                _reviewedOrderIds.Add(_reviewingOrderId.Value);
+            _reviewedOrderIds.Add(orderId);
+            _submittedReviews[orderId] = (_newRating, _newComment);
             _reviewingOrderId = null;
             _newRating = 0;
             _newComment = null;
+
+            // Mark the order as reviewed so it persists if re-fetched
+            var order = MyOrders?.FirstOrDefault(o => o.Id == orderId);
+            if (order != null)
+                order.IsReviewed = true;
         }
         else
         {
+            // If submission fails, the order was likely already reviewed
+            var order = MyOrders?.FirstOrDefault(o => o.Id == orderId);
+            if (order != null)
+                order.IsReviewed = true;
+            _reviewingOrderId = null;
             Snackbar.Add("Failed to submit review. This order may have already been reviewed.", Severity.Error);
         }
 
@@ -99,9 +115,9 @@ public partial class Orders
     {
         return status?.ToLower() switch
         {
-            "completed" or "picked up" => "background: rgba(5, 150, 105, 0.15); color: #6EE7B7; font-weight: 600;",
-            "cancelled" => "background: rgba(239, 68, 68, 0.15); color: #FCA5A5; font-weight: 600;",
-            "pending" => "background: rgba(245, 158, 11, 0.15); color: #FCD34D; font-weight: 600;",
+            "completed" or "picked up" => "background: var(--chip-bg); color: var(--accent-light); font-weight: 600;",
+            "cancelled" => "background: var(--status-cancelled-bg); color: #FCA5A5; font-weight: 600;",
+            "pending" => "background: var(--status-pending-bg); color: #FCD34D; font-weight: 600;",
             _ => "background: rgba(59, 130, 246, 0.15); color: #93C5FD; font-weight: 600;"
         };
     }

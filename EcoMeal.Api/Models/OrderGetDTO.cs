@@ -11,5 +11,8 @@
         public DateTime Date { get; set; }
         public string? UserName { get; set; }
         public string? UserContact { get; set; }
+        public bool IsReviewed { get; set; }
+        public int? ReviewRating { get; set; }
+        public string? ReviewComment { get; set; }
     }
 }

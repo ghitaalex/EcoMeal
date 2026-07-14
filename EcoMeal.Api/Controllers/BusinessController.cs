@@ -32,7 +32,16 @@ namespace EcoMeal.Api.Controllers
                 Description = b.Description,
                 Contact = b.Contact,
                 BusinessTypeName = b.BusinessType.Name,
-                BusinessImageUrl = b.BusinessImageUrl
+                BusinessImageUrl = b.BusinessImageUrl,
+                AverageRating = b.Packages
+                    .SelectMany(p => p.Orders)
+                    .SelectMany(o => _context.Review.Where(r => r.OrderId == o.Id))
+                    .Select(r => (double?)r.Rating)
+                    .Average() ?? 0,
+                ReviewCount = b.Packages
+                    .SelectMany(p => p.Orders)
+                    .SelectMany(o => _context.Review.Where(r => r.OrderId == o.Id))
+                    .Count()
                 }).ToListAsync();
 
             return Ok(businessesDTOs);
@@ -74,12 +83,14 @@ namespace EcoMeal.Api.Controllers
                     Contact = b.Contact,
                     BusinessTypeName = b.BusinessType.Name,
                     Packages = b.Packages
-                    .Where(p => p.Orders.Count == 0).Select(p => new PackageDTO
+                    .Select(p => new PackageDTO
                     {
                         Id = p.Id,
                         Name = p.Name,
                         Description = p.Description,
                         Price = p.Price,
+                        NoPackages = p.NoPackages,
+                        AvailablePackages = p.NoPackages,
                         PickUpStart = p.PickUpStart,
                         PickUpEnd = p.PickUpEnd,
                         PackageTypeName = p.PackageType.Name,

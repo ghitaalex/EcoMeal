@@ -14,10 +14,10 @@ else
 {
     <MudContainer MaxWidth="MaxWidth.Medium" Class="py-8">
         <MudPaper Class="pa-8" Elevation="0"
-                  Style="@($"color: #fff; border-radius: 24px; background: {(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "linear-gradient(135deg, #0B0F19 0%, #047857 100%)" : $"url('{Business.BusinessImageUrl}') center/cover no-repeat")}; position: relative; overflow: hidden;")">
-            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4, 120, 87, 0.2) 0%, rgba(4, 120, 87, 0.8) 100%);"></div>
+                  Style="@($"color: #fff; border-radius: 24px; background: {(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "var(--gradient-default)" : $"url('{Business.BusinessImageUrl}') center/cover no-repeat")}; position: relative; overflow: hidden;")">
+            <div style="position: absolute; inset: 0; background: var(--gradient-hero);"></div>
             <div style="position: relative; z-index: 1;">
-            <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled" Style="background: rgba(5, 150, 105, 0.35); color: #fff; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(4px);">
+            <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled" Style="background: rgba(29, 73, 52, 0.4); color: #fff; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(4px);">
                 @Business.BusinessTypeName
             </MudChip>
             <MudText Typo="Typo.h3" Class="mt-4 mb-2" Style="font-weight: 700; letter-spacing: -0.5px;">
@@ -43,15 +43,15 @@ else
         </MudPaper>
 
         <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-8 mb-4">
-            <MudText Typo="Typo.h5" Style="font-weight: 600; color: #6EE7B7;">Available Packages</MudText>
+            <MudText Typo="Typo.h5" Style="font-weight: 600; color: var(--accent-text);">Available Packages</MudText>
             <AuthorizeView Roles="Admin">
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                           Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
+                           Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: var(--glow-sm);"
                            OnClick="NavigateToAddPackage">
                     Add Package
                 </MudButton>
                 <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ListAlt"
-                           Style="color: #6EE7B7; border-color: #1E3A2F; text-transform: none; font-weight: 700; border-radius: 12px;"
+                           Style="color: var(--accent-text); border-color: var(--border-color); text-transform: none; font-weight: 700; border-radius: 12px;"
                            Href="@($"/business/{Id}/orders")">
                     Manage Orders
                 </MudButton>
@@ -64,13 +64,13 @@ else
         }
         else if (Packages.Count == 0)
         {
-            <MudPaper Class="pa-10 rounded-xl d-flex flex-column align-center justify-center" Style="border: 2px dashed #1E3A2F; background: #141A2A;" Elevation="0">
-                <MudIcon Icon="@Icons.Material.Outlined.Inventory2" Style="font-size: 3.5rem; color: #047857;" />
-                <MudText Typo="Typo.h6" Class="mt-4" Style="color: #CBD5E1;">No packages yet</MudText>
-                <MudText Typo="Typo.body2" Class="mb-4" Style="color: #64748B;">Create your first package to get started</MudText>
+            <MudPaper Class="pa-10 rounded-xl d-flex flex-column align-center justify-center" Style="border: 2px dashed var(--border-color); background: var(--bg-surface);" Elevation="0">
+                <MudIcon Icon="@Icons.Material.Outlined.Inventory2" Style="font-size: 3.5rem; color: var(--accent);" />
+                <MudText Typo="Typo.h6" Class="mt-4" Style="color: var(--text-secondary);">No packages yet</MudText>
+                <MudText Typo="Typo.body2" Class="mb-4" Style="color: var(--text-dim);">Create your first package to get started</MudText>
                 <AuthorizeView Roles="Admin">
                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                               Style="background: linear-gradient(135deg, #047857 0%, #065F46 100%); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.3);"
+                               Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; box-shadow: var(--glow-sm);"
                                OnClick="NavigateToAddPackage">
                         Add Package
                     </MudButton>
@@ -82,55 +82,69 @@ else
             <MudGrid Spacing="4">
                 @foreach (var package in Packages)
                 {
+                    var isSoldOut = package.AvailablePackages <= 0;
                     <MudItem xs="12" sm="6" md="4">
-                        <MudCard Elevation="0" Class="rounded-xl" Style="border: 1px solid #1E3A2F; background: #141A2A; height: 100%; transition: box-shadow 0.25s, transform 0.25s;">
-                            @if (!string.IsNullOrEmpty(package.PackageImageUrl))
-                            {
-                                <MudCardMedia Image="@package.PackageImageUrl" Height="140" />
-                            }
+                        <MudCard Elevation="0" Class="rounded-xl" Style="border: 1px solid var(--border-color); background: var(--bg-surface); height: 100%; transition: box-shadow 0.25s, transform 0.25s; overflow: hidden;">
+                            <div style="height: 140px; border-radius: 12px 12px 0 0; overflow: hidden; position: relative; @(string.IsNullOrEmpty(package.PackageImageUrl) ? "background: var(--gradient-default);" : $"background: url('{package.PackageImageUrl}') center/cover no-repeat;")">
+                                @if (!string.IsNullOrEmpty(package.PackageImageUrl))
+                                {
+                                    <div style="position: absolute; inset: 0; background: var(--gradient-hero);"></div>
+                                }
+                            </div>
                             <MudCardContent Class="pa-5">
                                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                                     <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled"
-                                             Style="background: rgba(5, 150, 105, 0.15); color: #6EE7B7; font-weight: 600; text-transform: uppercase; font-size: 0.7rem;">
+                                             Style="background: var(--chip-bg); color: var(--accent-light); font-weight: 600; text-transform: uppercase; font-size: 0.7rem;">
                                         @package.PackageTypeName
                                     </MudChip>
-                                    <MudText Typo="Typo.h6" Style="font-weight: 700; color: #6EE7B7;">
-                                        @package.Price.ToString("C")
+                                    <MudText Typo="Typo.h6" Style="font-weight: 700; color: var(--accent-light);">
+                                        @package.Price.ToString("0.00") RON
                                     </MudText>
                                 </MudStack>
-                                <MudText Typo="Typo.subtitle1" Class="mt-3" Style="font-weight: 600; color: #F1F5F9;">
+                                <MudText Typo="Typo.subtitle1" Class="mt-3" Style="font-weight: 600; color: var(--text-primary);">
                                     @package.Name
                                 </MudText>
                                 @if (!string.IsNullOrEmpty(package.Description))
                                 {
-                                    <MudText Typo="Typo.body2" Class="mt-1" Style="color: #CBD5E1;">
+                                    <MudText Typo="Typo.body2" Class="mt-1" Style="color: var(--text-secondary);">
                                         @package.Description
                                     </MudText>
                                 }
-                                <MudDivider Class="my-3" Style="border-color: #1E3A2F;" />
+                                <MudDivider Class="my-3" Style="border-color: var(--border-color);" />
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-2">
+                                    <MudText Typo="Typo.caption" Style="color: var(--text-muted);">Packages left</MudText>
+                                    <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled"
+                                             Style="@(isSoldOut ? "background: var(--status-cancelled-bg); color: #FCA5A5; font-weight: 600;" : "background: var(--chip-bg); color: var(--accent-light); font-weight: 600;")">
+                                        @Math.Max(0, package.AvailablePackages)
+                                    </MudChip>
+                                </MudStack>
                                 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                                        <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="MudBlazor.Size.Small" Style="color: #059669;" />
-                                        <MudText Typo="Typo.body2" Style="color: #CBD5E1;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="MudBlazor.Size.Small" Style="color: var(--accent);" />
+                                        <MudText Typo="Typo.body2" Style="color: var(--text-secondary);">
                                             @package.PickUpStart.ToLocalTime().ToString("HH:mm") – @package.PickUpEnd.ToLocalTime().ToString("HH:mm")
                                         </MudText>
                                     </MudStack>
                                     <AuthorizeView Roles="Admin">
                                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="MudBlazor.Size.Small"
-                                                       Style="color: #6EE7B7;"
+                                                       Style="color: var(--accent-light);"
                                                        OnClick="() => NavigateToEditPackage(package.Id)" />
                                     </AuthorizeView>
                                 </MudStack>
                                 <AuthorizeView>
                                     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ShoppingCart"
                                                FullWidth="true" Class="mt-3"
-                                               Style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #fff; text-transform: none; font-weight: 600; border-radius: 10px; box-shadow: 0 4px 14px rgba(4, 120, 87, 0.25);"
-                                               Disabled="@(_orderingPackageId == package.Id)"
+                                               Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 600; border-radius: 10px; box-shadow: var(--glow-sm);"
+                                               Disabled="@(_orderingPackageId == package.Id || isSoldOut)"
                                                OnClick="() => PlaceOrder(package.Id)">
                                         @if (_orderingPackageId == package.Id)
                                         {
                                             <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Style="width:16px;height:16px;color:#fff;" Class="me-2" />
                                             <span>Placing order…</span>
+                                        }
+                                        else if (isSoldOut)
+                                        {
+                                            <span>Sold Out</span>
                                         }
                                         else
                                         {
@@ -145,7 +159,7 @@ else
             </MudGrid>
         }
 
-        <MudText Typo="Typo.h5" Class="mt-10 mb-4" Style="font-weight: 600; color: #6EE7B7;">Reviews</MudText>
+        <MudText Typo="Typo.h5" Class="mt-10 mb-4" Style="font-weight: 600; color: var(--accent-text);">Reviews</MudText>
 
         @if (Reviews is null)
         {
@@ -153,9 +167,9 @@ else
         }
         else if (!Reviews.Any())
         {
-            <MudPaper Class="pa-8 rounded-xl d-flex flex-column align-center" Style="border: 1px dashed #1E3A2F; background: #141A2A;" Elevation="0">
-                <MudIcon Icon="@Icons.Material.Outlined.Reviews" Style="font-size: 2.5rem; color: #047857;" />
-                <MudText Typo="Typo.body1" Class="mt-3" Style="color: #64748B;">No reviews yet</MudText>
+            <MudPaper Class="pa-8 rounded-xl d-flex flex-column align-center" Style="border: 1px dashed var(--border-color); background: var(--bg-surface);" Elevation="0">
+                <MudIcon Icon="@Icons.Material.Outlined.Reviews" Style="font-size: 2.5rem; color: var(--accent);" />
+                <MudText Typo="Typo.body1" Class="mt-3" Style="color: var(--text-dim);">No reviews yet</MudText>
             </MudPaper>
         }
         else
@@ -163,22 +177,22 @@ else
             <MudStack Spacing="3">
                 @foreach (var review in Reviews)
                 {
-                    <MudPaper Class="pa-5 rounded-xl" Style="background: #141A2A; border: 1px solid #1E3A2F;" Elevation="0">
+                    <MudPaper Class="pa-5 rounded-xl" Style="background: var(--bg-surface); border: 1px solid var(--border-color);" Elevation="0">
                         <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
                             <MudStack Spacing="1">
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                                    <MudAvatar Size="MudBlazor.Size.Small" Style="background: linear-gradient(135deg, #059669, #34D399); color: #fff; font-size: 0.75rem;">
+                                    <MudAvatar Size="MudBlazor.Size.Small" Style="background: var(--gradient-primary); color: #fff; font-size: 0.75rem;">
                                         @(review.UserName?.Length > 0 ? review.UserName[0].ToString().ToUpper() : "?")
                                     </MudAvatar>
-                                    <MudText Typo="Typo.subtitle2" Style="color: #F1F5F9; font-weight: 600;">@review.UserName</MudText>
-                                    <MudText Typo="Typo.caption" Style="color: #64748B;">@review.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</MudText>
+                                    <MudText Typo="Typo.subtitle2" Style="color: var(--text-primary); font-weight: 600;">@review.UserName</MudText>
+                                    <MudText Typo="Typo.caption" Style="color: var(--text-dim);">@review.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</MudText>
                                 </MudStack>
                                 <MudRating ReadOnly="true" SelectedValue="@review.Rating" MaxValue="5"
                                            FullIcon="@Icons.Material.Filled.Star" EmptyIcon="@Icons.Material.Filled.StarBorder"
                                            Color="MudBlazor.Color.Warning" Size="MudBlazor.Size.Small" />
                                 @if (!string.IsNullOrEmpty(review.Comment))
                                 {
-                                    <MudText Typo="Typo.body2" Class="mt-1" Style="color: #CBD5E1;">@review.Comment</MudText>
+                                    <MudText Typo="Typo.body2" Class="mt-1" Style="color: var(--text-secondary);">@review.Comment</MudText>
                                 }
                             </MudStack>
                         </MudStack>
@@ -190,18 +204,18 @@ else
         <AuthorizeView>
             @if (MyBusinessOrders is not null && MyBusinessOrders.Any())
             {
-                <MudText Typo="Typo.h5" Class="mt-10 mb-4" Style="font-weight: 600; color: #6EE7B7;">Your Orders Here</MudText>
+                <MudText Typo="Typo.h5" Class="mt-10 mb-4" Style="font-weight: 600; color: var(--accent-light);">Your Orders Here</MudText>
                 <MudStack Spacing="3">
                     @foreach (var order in MyBusinessOrders.OrderByDescending(o => o.Date))
                     {
-                        <MudPaper Class="pa-4 rounded-xl" Style="background: #141A2A; border: 1px solid #1E3A2F;" Elevation="0">
+                        <MudPaper Class="pa-4 rounded-xl" Style="background: var(--bg-surface); border: 1px solid var(--border-color);" Elevation="0">
                             <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                                 <MudStack Spacing="0">
-                                    <MudText Typo="Typo.subtitle2" Style="color: #F1F5F9; font-weight: 600;">@order.PackageName</MudText>
-                                    <MudText Typo="Typo.caption" Style="color: #64748B;">@order.Date.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</MudText>
+                                    <MudText Typo="Typo.subtitle2" Style="color: var(--text-primary); font-weight: 600;">@order.PackageName</MudText>
+                                    <MudText Typo="Typo.caption" Style="color: var(--text-dim);">@order.Date.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</MudText>
                                 </MudStack>
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                                    <MudText Typo="Typo.body2" Style="color: #6EE7B7; font-weight: 600;">@order.Price.ToString("C")</MudText>
+                                    <MudText Typo="Typo.body2" Style="color: var(--accent-light); font-weight: 600;">@order.Price.ToString("0.00") RON</MudText>
                                     <MudChip T="string" Size="MudBlazor.Size.Small" Variant="Variant.Filled"
                                              Style="@GetStatusChipStyle(order.Status)">
                                         @order.Status
@@ -261,10 +275,14 @@ else
         if (success)
         {
             Snackbar.Add("Order placed successfully!", Severity.Success);
+            Packages = await packageService.GetByBusinessId(Id);
+            var allOrders = await orderService.GetMyOrderAsync();
+            MyBusinessOrders = allOrders.Where(o => o.BusinessId == Id).ToList();
         }
         else
         {
             Snackbar.Add("Failed to place order. Please try again.", Severity.Error);
+            Packages = await packageService.GetByBusinessId(Id);
         }
 
         _orderingPackageId = null;
@@ -274,7 +292,7 @@ else
     {
         return status?.ToLower() switch
         {
-            "completed" or "picked up" => "background: rgba(5, 150, 105, 0.15); color: #6EE7B7; font-weight: 600;",
+            "completed" or "picked up" => "background: rgba(5, 150, 105, 0.15); color: var(--accent-text); font-weight: 600;",
             "cancelled" => "background: rgba(239, 68, 68, 0.15); color: #FCA5A5; font-weight: 600;",
             "pending" => "background: rgba(245, 158, 11, 0.15); color: #FCD34D; font-weight: 600;",
             _ => "background: rgba(59, 130, 246, 0.15); color: #93C5FD; font-weight: 600;"

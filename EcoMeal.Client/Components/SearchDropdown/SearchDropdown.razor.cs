@@ -101,7 +101,7 @@ namespace EcoMeal.Client.Components.SearchDropdown
                         ImageUrl = p.PackageImageUrl,
                         Category = p.PackageTypeName,
                         NavigateUrl = $"/business/{b.Id}",
-                        ExtraInfo = p.Price.ToString("C")
+                        ExtraInfo = p.Price.ToString("0.00") + " RON"
                     });
                 }
             }
