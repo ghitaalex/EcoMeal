@@ -13,7 +13,7 @@ builder.Services.AddMudServices();
 builder.Services.AddTransient<AuthenticationHeaderHandler>();
 builder.Services.AddHttpClient("EcoMealApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7088/");
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://ecomeal-app-service.azurewebsites.net/");
 }).AddHttpMessageHandler<AuthenticationHeaderHandler>();
 
 builder.Services.AddScoped(sp =>

@@ -165,3 +165,16 @@ resource "azurerm_linux_web_app" "app_service" {
     value = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.blob_connection.versionless_id})"
   }
 }
+
+resource "azurerm_linux_web_app" "client_service" {
+  name                = "ecomeal-client"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  service_plan_id     = azurerm_service_plan.app_service_plan.id
+
+  site_config {
+    application_stack {
+      dotnet_version = "10.0"
+    }
+  }
+}

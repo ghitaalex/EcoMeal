@@ -39,9 +39,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorSite", policy =>
     {
-        policy.WithOrigins("http://localhost:5001")
+        policy.WithOrigins("http://localhost:5001", "https://ecomeal-client.azurewebsites.net")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
