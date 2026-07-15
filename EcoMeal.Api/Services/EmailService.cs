@@ -12,7 +12,7 @@ namespace EcoMeal.Api.Services
         public EmailService(IConfiguration configuration, IWebHostEnvironment env)
         {
             _httpClient = new HttpClient();
-            _apiKey = configuration["MailTrap:ApiKey"]!;
+            _apiKey = configuration["MailtrapApiKey"]!;
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
             _env = env;
         }
