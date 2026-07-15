@@ -61,6 +61,8 @@ public class AuthService
                 {
                     customProvider.NotifyUserAuthentication(Token, roles);
                 }
+
+                await SendLoginNotificationAsync();
             }
 
             return AuthResult.Ok();
@@ -168,5 +170,22 @@ public class AuthService
         }
 
         return new List<string>();
+    }
+
+    private async Task SendLoginNotificationAsync()
+    {
+        try
+        {
+            using var response = await _http.PostAsync("api/auth/login-notification", null);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(
+                    $"Login notification request failed with status {(int)response.StatusCode}.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error requesting login notification: {ex.Message}");
+        }
     }
 }

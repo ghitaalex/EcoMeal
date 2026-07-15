@@ -27,13 +27,15 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_storage_container" "businesses" {
-  name               = "ecomeal-businesses"
-  storage_account_id = azurerm_storage_account.storage.id
+  name                  = "ecomeal-businesses"
+  storage_account_id    = azurerm_storage_account.storage.id
+  container_access_type = "blob"
 }
 
 resource "azurerm_storage_container" "packages" {
-  name               = "ecomeal-packages"
-  storage_account_id = azurerm_storage_account.storage.id
+  name                  = "ecomeal-packages"
+  storage_account_id    = azurerm_storage_account.storage.id
+  container_access_type = "blob"
 }
 
 resource "azurerm_mssql_server" "sql" {
@@ -46,11 +48,11 @@ resource "azurerm_mssql_server" "sql" {
 }
 
 resource "azurerm_mssql_database" "db" {
-  name                        = "ecomealdb"
-  server_id                   = azurerm_mssql_server.sql.id
-  sku_name                    = "Basic"
-  max_size_gb                 = 2
-  storage_account_type        = "Local"
+  name                 = "ecomealdb"
+  server_id            = azurerm_mssql_server.sql.id
+  sku_name             = "Basic"
+  max_size_gb          = 2
+  storage_account_type = "Local"
 }
 
 resource "azurerm_mssql_firewall_rule" "allow_azure" {
@@ -65,9 +67,18 @@ variable "db_password" {
   sensitive = true
 }
 
-variable "mailtrap_api_key" {
+variable "mailjet_api_key" {
   type      = string
   sensitive = true
+}
+
+variable "mailjet_secret_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "mailjet_sender_email" {
+  type = string
 }
 
 resource "azurerm_key_vault" "kv" {
@@ -110,9 +121,17 @@ resource "azurerm_key_vault_secret" "blob_connection" {
   depends_on = [azurerm_key_vault_access_policy.current_user]
 }
 
-resource "azurerm_key_vault_secret" "mailtrap_api_key" {
-  name         = "MailtrapApiKey"
-  value        = var.mailtrap_api_key
+resource "azurerm_key_vault_secret" "mailjet_api_key" {
+  name         = "MailjetApiKey"
+  value        = var.mailjet_api_key
+  key_vault_id = azurerm_key_vault.kv.id
+
+  depends_on = [azurerm_key_vault_access_policy.current_user]
+}
+
+resource "azurerm_key_vault_secret" "mailjet_secret_key" {
+  name         = "MailjetSecretKey"
+  value        = var.mailjet_secret_key
   key_vault_id = azurerm_key_vault.kv.id
 
   depends_on = [azurerm_key_vault_access_policy.current_user]
@@ -149,8 +168,22 @@ resource "azurerm_linux_web_app" "app_service" {
     }
   }
 
+  logs {
+    detailed_error_messages = false
+    failed_request_tracing  = false
+
+    http_logs {
+      file_system {
+        retention_in_days = 0
+        retention_in_mb   = 35
+      }
+    }
+  }
+
   app_settings = {
-    "MailtrapApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailtrap_api_key.versionless_id})"
+    "MailjetApiKey"      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_api_key.versionless_id})"
+    "MailjetSecretKey"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_secret_key.versionless_id})"
+    "MailjetSenderEmail" = var.mailjet_sender_email
   }
 
   connection_string {

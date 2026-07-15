@@ -64,6 +64,50 @@ namespace EcoMeal.Api.Controllers
             return Ok(new { Message = "User registered successfully" });
         }
 
+        [HttpPost("login-notification")]
+        [Authorize]
+        public async Task<IActionResult> SendLoginNotification()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                _logger.LogWarning(
+                    "Cannot send login notification because user {UserId} has no email address",
+                    user.Id);
+                return NoContent();
+            }
+
+            try
+            {
+                var userName = string.IsNullOrWhiteSpace(user.Name) ? "there" : user.Name;
+                var body = await _emailService.LoadTemplateAsync(
+                    "LoginNotification",
+                    new Dictionary<string, string>
+                    {
+                        { "UserName", userName },
+                        { "LoginTime", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm 'UTC'") }
+                    });
+
+                await _emailService.SendEmailAsync(
+                    user.Email,
+                    userName,
+                    "New login to your EcoMeal account",
+                    body);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Failed to send login notification to user {UserId}",
+                    user.Id);
+            }
+
+            return NoContent();
+        }
+
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> GetMe()
