@@ -14,10 +14,21 @@ public class OrderService
         _authService = authService;
     }
 
-    public async Task<bool> PlaceOrderAsync(int packageId)
+    public async Task<(bool Success, string? Error)> PlaceOrderAsync(int packageId)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/order", new { PackageId = packageId });
-        return response.IsSuccessStatusCode;
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/order", new { PackageId = packageId });
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var body = await response.Content.ReadAsStringAsync();
+            return (false, $"Status {(int)response.StatusCode}: {body}");
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message);
+        }
     }
 
     public async Task<List<OrderGetModel>> GetMyOrderAsync()

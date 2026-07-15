@@ -271,8 +271,8 @@ else
         _orderingPackageId = packageId;
         StateHasChanged();
 
-        var success = await orderService.PlaceOrderAsync(packageId);
-        if (success)
+        var result = await orderService.PlaceOrderAsync(packageId);
+        if (result.Success)
         {
             Snackbar.Add("Order placed successfully!", Severity.Success);
             Packages = await packageService.GetByBusinessId(Id);
@@ -281,7 +281,7 @@ else
         }
         else
         {
-            Snackbar.Add("Failed to place order. Please try again.", Severity.Error);
+            Snackbar.Add($"Failed to place order: {result.Error}", Severity.Error);
             Packages = await packageService.GetByBusinessId(Id);
         }
 

@@ -39,12 +39,16 @@ namespace EcoMeal.Api.Controllers
 
             await _userManager.AddToRoleAsync(user, UserRoles.User);
 
-            var body = await _emailService.LoadTemplateAsync("Welcome", new Dictionary<string, string>
-                {
-                    { "UserName", user.Name }
-                });
+            try
+            {
+                var body = await _emailService.LoadTemplateAsync("Welcome", new Dictionary<string, string>
+                    {
+                        { "UserName", user.Name }
+                    });
 
-            await _emailService.SendEmailAsync(user.Email, user.Name, "Welcome to EcoMeal! 🌱", body);
+                await _emailService.SendEmailAsync(user.Email, user.Name, "Welcome to EcoMeal! 🌱", body);
+            }
+            catch { }
 
             return Ok(new { Message = "User registered successfully" });
         }

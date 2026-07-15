@@ -50,17 +50,21 @@ namespace EcoMeal.Api.Controllers
             };
             _context.Order.Add(order);
             await _context.SaveChangesAsync();
-            var body = await _emailService.LoadTemplateAsync("OrderConfirmed", new Dictionary<string, string>
-                {
-                    { "UserName", user.Name },
-                    { "PackageName", package.Name },
-                    { "BusinessName", package.Business.Name },
-                    { "Price", package.Price.ToString("F2") },
-                    { "PickUpStart", package.PickUpStart.ToString("HH:mm") },
-                    { "PickUpEnd", package.PickUpEnd.ToString("HH:mm") }
-                });
+            try
+            {
+                var body = await _emailService.LoadTemplateAsync("OrderConfirmed", new Dictionary<string, string>
+                    {
+                        { "UserName", user.Name },
+                        { "PackageName", package.Name },
+                        { "BusinessName", package.Business.Name },
+                        { "Price", package.Price.ToString("F2") },
+                        { "PickUpStart", package.PickUpStart.ToString("HH:mm") },
+                        { "PickUpEnd", package.PickUpEnd.ToString("HH:mm") }
+                    });
 
-            await _emailService.SendEmailAsync(user.Email, user.Name, "Your EcoMeal Order is Confirmed! 🎉", body);
+                await _emailService.SendEmailAsync(user.Email, user.Name, "Your EcoMeal Order is Confirmed! 🎉", body);
+            }
+            catch { }
 
             return Ok(new OrderGetDTO
             {
