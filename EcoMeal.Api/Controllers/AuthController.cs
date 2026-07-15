@@ -14,11 +14,16 @@ namespace EcoMeal.Api.Controllers
     {
         private readonly EmailService _emailService;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(UserManager<User> userManager, EmailService emailService)
+        public AuthController(
+            UserManager<User> userManager,
+            EmailService emailService,
+            ILogger<AuthController> logger)
         {
             _userManager = userManager;
             _emailService = emailService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -48,7 +53,13 @@ namespace EcoMeal.Api.Controllers
 
                 await _emailService.SendEmailAsync(user.Email, user.Name, "Welcome to EcoMeal! 🌱", body);
             }
-            catch { }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Failed to send welcome email to user {UserId}",
+                    user.Id);
+            }
 
             return Ok(new { Message = "User registered successfully" });
         }

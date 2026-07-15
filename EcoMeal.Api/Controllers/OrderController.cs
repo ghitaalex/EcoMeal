@@ -16,11 +16,16 @@ namespace EcoMeal.Api.Controllers
     {
         private readonly EcoMealDbContext _context;
         private readonly EmailService _emailService;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(EcoMealDbContext context, EmailService emailService)
+        public OrderController(
+            EcoMealDbContext context,
+            EmailService emailService,
+            ILogger<OrderController> logger)
         {
             _context = context;
             _emailService = emailService;
+            _logger = logger;
         }
         [HttpPost]
         public async Task<ActionResult<OrderGetDTO>> CreateOrder([FromBody] OrderCreateDTO request) {
@@ -64,7 +69,13 @@ namespace EcoMeal.Api.Controllers
 
                 await _emailService.SendEmailAsync(user.Email, user.Name, "Your EcoMeal Order is Confirmed! 🎉", body);
             }
-            catch { }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Failed to send confirmation email for order {OrderId}",
+                    order.Id);
+            }
 
             return Ok(new OrderGetDTO
             {

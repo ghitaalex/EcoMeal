@@ -8,13 +8,19 @@ namespace EcoMeal.Api.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly IWebHostEnvironment _env;
+        private readonly ILogger<EmailService> _logger;
 
-        public EmailService(IConfiguration configuration, IWebHostEnvironment env)
+        public EmailService(
+            IConfiguration configuration,
+            IWebHostEnvironment env,
+            ILogger<EmailService> logger)
         {
             _httpClient = new HttpClient();
-            _apiKey = configuration["MailtrapApiKey"]!;
+            _apiKey = configuration["MailtrapApiKey"]
+                ?? throw new InvalidOperationException("MailtrapApiKey is not configured.");
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
             _env = env;
+            _logger = logger;
         }
 
         public async Task<string> LoadTemplateAsync(string templateName, Dictionary<string, string> placeholders)
@@ -43,7 +49,19 @@ namespace EcoMeal.Api.Services
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            await _httpClient.PostAsync("https://send.api.mailtrap.io/api/send", content);
+            using var response = await _httpClient.PostAsync("https://send.api.mailtrap.io/api/send", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                _logger.LogError(
+                    "Mailtrap rejected an email to {Recipient}. Status: {StatusCode}. Response: {ResponseBody}",
+                    toEmail,
+                    (int)response.StatusCode,
+                    responseBody);
+            }
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }
