@@ -1,6 +1,7 @@
 ﻿using EcoMeal.Api.Entities;
 using EcoMeal.Api.Infrastructure;
 using EcoMeal.Api.Models;
+using EcoMeal.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,14 +15,17 @@ namespace EcoMeal.Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly EcoMealDbContext _context;
-        public OrderController(EcoMealDbContext context)
+        private readonly EmailService _emailService;
+
+        public OrderController(EcoMealDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
         [HttpPost]
         public async Task<ActionResult<OrderGetDTO>> CreateOrder([FromBody] OrderCreateDTO request) {
             var userId = GetCurrentUserID();
-
+            var user = await _context.Users.FindAsync(userId);
             var package = await _context.Package.Include(p => p.Business)
                 .FirstOrDefaultAsync(p => p.Id == request.PackageId);
 
@@ -46,6 +50,17 @@ namespace EcoMeal.Api.Controllers
             };
             _context.Order.Add(order);
             await _context.SaveChangesAsync();
+            var body = await _emailService.LoadTemplateAsync("OrderConfirmed", new Dictionary<string, string>
+                {
+                    { "UserName", user.Name },
+                    { "PackageName", package.Name },
+                    { "BusinessName", package.Business.Name },
+                    { "Price", package.Price.ToString("F2") },
+                    { "PickUpStart", package.PickUpStart.ToString("HH:mm") },
+                    { "PickUpEnd", package.PickUpEnd.ToString("HH:mm") }
+                });
+
+            await _emailService.SendEmailAsync(user.Email, user.Name, "Your EcoMeal Order is Confirmed! 🎉", body);
 
             return Ok(new OrderGetDTO
             {

@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-/*builder.Configuration.AddAzureKeyVault(
+builder.Configuration.AddAzureKeyVault(
     new Uri("https://ecomeal-vault.vault.azure.net/"),
     new DefaultAzureCredential());
-*/
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -48,6 +48,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
 builder.Services.AddScoped<BlobStorageService>();
+builder.Services.AddScoped<EmailService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0"
+      version = "~> 4.0"
     }
   }
 }
@@ -27,15 +27,13 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_storage_container" "businesses" {
-  name                  = "ecomeal-businesses"
-  storage_account_name  = azurerm_storage_account.storage.name
-  container_access_type = "blob"
+  name               = "ecomeal-businesses"
+  storage_account_id = azurerm_storage_account.storage.id
 }
 
 resource "azurerm_storage_container" "packages" {
-  name                  = "ecomeal-packages"
-  storage_account_name  = azurerm_storage_account.storage.name
-  container_access_type = "blob"
+  name               = "ecomeal-packages"
+  storage_account_id = azurerm_storage_account.storage.id
 }
 
 resource "azurerm_mssql_server" "sql" {
@@ -67,6 +65,11 @@ variable "db_password" {
   sensitive = true
 }
 
+variable "mailtrap_api_key" {
+  type      = string
+  sensitive = true
+}
+
 resource "azurerm_key_vault" "kv" {
   name                = "ecomeal-vault"
   location            = azurerm_resource_group.rg.location
@@ -81,6 +84,14 @@ resource "azurerm_key_vault_access_policy" "current_user" {
   object_id    = data.azurerm_client_config.current.object_id
 
   secret_permissions = ["Get", "List", "Set", "Delete", "Purge"]
+}
+
+resource "azurerm_key_vault_access_policy" "app_service" {
+  key_vault_id = azurerm_key_vault.kv.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_linux_web_app.app_service.identity[0].principal_id
+
+  secret_permissions = ["Get", "List"]
 }
 
 resource "azurerm_key_vault_secret" "db_connection" {
@@ -99,9 +110,58 @@ resource "azurerm_key_vault_secret" "blob_connection" {
   depends_on = [azurerm_key_vault_access_policy.current_user]
 }
 
+resource "azurerm_key_vault_secret" "mailtrap_api_key" {
+  name         = "MailtrapApiKey"
+  value        = var.mailtrap_api_key
+  key_vault_id = azurerm_key_vault.kv.id
+
+  depends_on = [azurerm_key_vault_access_policy.current_user]
+}
+
 resource "azurerm_mssql_firewall_rule" "allow_local" {
   name             = "AllowLocalDev"
   server_id        = azurerm_mssql_server.sql.id
   start_ip_address = "128.127.113.223"
   end_ip_address   = "128.127.113.223"
+}
+
+resource "azurerm_service_plan" "app_service_plan" {
+  name                = "ecomeal-appserviceplan"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  os_type             = "Linux"
+  sku_name            = "S1"
+}
+
+resource "azurerm_linux_web_app" "app_service" {
+  name                = "ecomeal-app-service"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  service_plan_id     = azurerm_service_plan.app_service_plan.id
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  site_config {
+    application_stack {
+      dotnet_version = "10.0"
+    }
+  }
+
+  app_settings = {
+    "MailtrapApiKey" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailtrap_api_key.versionless_id})"
+  }
+
+  connection_string {
+    name  = "DefaultConnection"
+    type  = "SQLServer"
+    value = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.db_connection.versionless_id})"
+  }
+
+  connection_string {
+    name  = "AzureBlobStorage"
+    type  = "Custom"
+    value = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.blob_connection.versionless_id})"
+  }
 }
