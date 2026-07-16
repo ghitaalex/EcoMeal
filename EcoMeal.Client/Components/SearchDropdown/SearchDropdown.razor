@@ -2,16 +2,18 @@
 @using EcoMeal.Client.Components.SearchResultCard
 
 <div class="search-dropdown-wrapper">
-    <MudPaper Elevation="0" Class="search-shell d-flex align-center">
-        <MudIcon Icon="@Icons.Material.Outlined.Search" Style="color: var(--accent); font-size: 1.25rem; margin-right: 0.5rem;" />
-        <input type="text" class="search-input" placeholder="Search businesses and packages"
-               value="@_searchText" @oninput="OnInput" @onfocus="HandleFocus" @onkeydown="HandleKeyDown" />
-    </MudPaper>
+    <div @onclick:stopPropagation="true">
+        <MudPaper Elevation="0" Class="search-shell d-flex align-center">
+            <MudIcon Icon="@Icons.Material.Outlined.Search" Style="color: var(--accent); font-size: 1.25rem; margin-right: 0.5rem;" />
+            <input type="text" class="search-input" placeholder="Search businesses and packages"
+                   @ref="_searchInput" value="@_searchText" @oninput="OnInput" @onfocus="HandleFocus" @onkeydown="HandleKeyDown" />
+        </MudPaper>
+    </div>
 
     @if (_isOpen)
     {
         <div class="search-backdrop" @onclick="Close"></div>
-        <div class="search-results-dropdown">
+        <div class="search-results-dropdown" @onclick:stopPropagation="true">
             @if (_loading)
             {
                 <div class="search-status">

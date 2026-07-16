@@ -21,6 +21,7 @@ namespace EcoMeal.Client.Components.SearchDropdown
         private bool _isOpen;
         private bool _loaded;
         private bool _loading;
+        private ElementReference _searchInput;
         private readonly List<SearchResult> _allResults = new();
 
         private IEnumerable<SearchResult> FilteredResults =>
@@ -115,9 +116,14 @@ namespace EcoMeal.Client.Components.SearchDropdown
             Navigation.NavigateTo(url);
         }
 
-        private void Close()
+        public void Close()
         {
             _isOpen = false;
+        }
+
+        public ValueTask FocusAsync()
+        {
+            return _searchInput.FocusAsync();
         }
 
         private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

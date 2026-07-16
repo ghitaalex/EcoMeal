@@ -35,9 +35,6 @@ else if (Businesses is null)
 else
 {
     <div class="filter-row" aria-label="Filter businesses by category">
-        <span class="filter-count">
-            @FilteredBusinesses.Count() business@(FilteredBusinesses.Count() == 1 ? "" : "es") available
-        </span>
         <div class="filter-scroll">
             <button type="button" class="category-filter @(_selectedType is null ? "active" : null)"
                     aria-pressed="@(_selectedType is null)" @onclick="() => SelectFilter(null)">
@@ -98,50 +95,20 @@ else
         </div>
     }
 
-    <AuthorizeView>
-        <Authorized>
-            <section class="favorites-section">
-                <div class="discover-header favorites-header">
-                    <div>
-                        <span class="section-kicker">Saved places</span>
-                        <h2>Your favorite businesses</h2>
-                    </div>
-                </div>
-
-                @if (FavoriteBusinesses.Any())
-                {
-                    <div class="business-grid">
-                        @foreach (var business in FavoriteBusinesses)
-                        {
-                            <BusinessCard Business="business" OnFavoriteChanged="HandleFavoriteChanged" />
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="favorites-empty">
-                        <MudIcon Icon="@Icons.Material.Outlined.FavoriteBorder" />
-                        <span>Use the heart button to save businesses here.</span>
-                    </div>
-                }
-            </section>
-        </Authorized>
-    </AuthorizeView>
-
-    <div class="discover-header">
-        <div>
-            <span class="section-kicker">Fresh finds near you</span>
-            <h2>Discover something delicious</h2>
-        </div>
-        <AuthorizeView Roles="Admin">
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Class="add-business-btn" Href="/business/add">
-                Add business
-            </MudButton>
-        </AuthorizeView>
-    </div>
-
     @if (_viewMode == "map")
     {
+        <div class="discover-header">
+            <div>
+                <span class="section-kicker">All places near you</span>
+                <h2>Explore businesses on the map</h2>
+            </div>
+            <AuthorizeView Roles="Admin">
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Class="add-business-btn" Href="/business/add">
+                    Add business
+                </MudButton>
+            </AuthorizeView>
+        </div>
+
         <div class="map-shell">
             @if (_mapError is not null)
             {
@@ -163,21 +130,66 @@ else
             }
         </div>
     }
-    else if (!FilteredBusinesses.Any())
-    {
-        <div class="empty-results">
-            <MudIcon Icon="@Icons.Material.Outlined.SearchOff" />
-            <h3>No places in this category yet</h3>
-            <p>Try another filter to discover more food nearby.</p>
-        </div>
-    }
     else
     {
-        <div class="business-grid">
-            @foreach (BusinessModel business in FilteredBusinesses)
-            {
-                <BusinessCard Business="business" OnFavoriteChanged="HandleFavoriteChanged" />
-            }
+        <AuthorizeView>
+            <Authorized>
+                <section class="favorites-section">
+                    <div class="discover-header favorites-header">
+                        <div>
+                            <span class="section-kicker">Saved places</span>
+                            <h2>Your favorite businesses</h2>
+                        </div>
+                    </div>
+
+                    @if (FavoriteBusinesses.Any())
+                    {
+                        <div class="business-grid">
+                            @foreach (var business in FavoriteBusinesses)
+                            {
+                                <BusinessCard Business="business" OnFavoriteChanged="HandleFavoriteChanged" />
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="favorites-empty">
+                            <MudIcon Icon="@Icons.Material.Outlined.FavoriteBorder" />
+                            <span>Use the heart button to save businesses here.</span>
+                        </div>
+                    }
+                </section>
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="discover-header">
+            <div>
+                <span class="section-kicker">Fresh finds near you</span>
+                <h2>Discover something delicious</h2>
+            </div>
+            <AuthorizeView Roles="Admin">
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Class="add-business-btn" Href="/business/add">
+                    Add business
+                </MudButton>
+            </AuthorizeView>
         </div>
+
+        @if (!FilteredBusinesses.Any())
+        {
+            <div class="empty-results">
+                <MudIcon Icon="@Icons.Material.Outlined.SearchOff" />
+                <h3>No places in this category yet</h3>
+                <p>Try another filter to discover more food nearby.</p>
+            </div>
+        }
+        else
+        {
+            <div class="business-grid">
+                @foreach (BusinessModel business in FilteredBusinesses)
+                {
+                    <BusinessCard Business="business" OnFavoriteChanged="HandleFavoriteChanged" />
+                }
+            </div>
+        }
     }
 }

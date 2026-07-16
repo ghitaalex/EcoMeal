@@ -9,8 +9,9 @@
 <MudSnackbarProvider />
 
 <MudLayout Class="@($"eco-layout {(_isDarkMode ? "theme-dark" : "theme-light")}")">
+    <div class="app-frame" @onclick="CloseMobileSearch">
     <header class="main-appbar">
-        <div class="appbar-row">
+        <div class="appbar-row @(_mobileSearchOpen ? "search-open" : null)">
             <div class="appbar-brand-group">
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" aria-label="Open navigation" Class="nav-trigger" />
                 <MudButton Href="/" Variant="Variant.Text" Class="brand-btn">
@@ -18,10 +19,17 @@
                     <span class="brand-text"><span>Eco</span><strong>Meal</strong></span>
                 </MudButton>
             </div>
-            <div class="navbar-search">
-                <SearchDropdown />
+            <div id="global-search" class="navbar-search @(_mobileSearchOpen ? "mobile-search-open" : null)">
+                <SearchDropdown @ref="_searchDropdown" />
             </div>
             <div class="appbar-actions">
+                <span class="mobile-search-trigger" @onclick:stopPropagation="true">
+                    <MudIconButton Icon="@(_mobileSearchOpen ? Icons.Material.Filled.Close : Icons.Material.Outlined.Search)"
+                                   Color="Color.Inherit" OnClick="ToggleMobileSearch"
+                                   aria-label="@(_mobileSearchOpen ? "Close search" : "Open search")"
+                                   aria-expanded="@_mobileSearchOpen" aria-controls="global-search"
+                                   Class="header-action mobile-search-toggle" />
+                </span>
                 <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
                                Color="Color.Inherit" OnClick="ToggleTheme" aria-label="Toggle color theme" Class="header-action" />
                 <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Inherit" Href="/orders" aria-label="My orders" Class="header-action" />
@@ -66,11 +74,15 @@
     <main class="app-main">
         @Body
     </main>
+    </div>
 </MudLayout>
 
 @code {
     private bool _drawerOpen = false;
     private bool _isDarkMode = false;
+    private bool _mobileSearchOpen;
+    private bool _focusMobileSearch;
+    private SearchDropdown? _searchDropdown;
 
     private MudTheme _theme = new()
     {
@@ -121,6 +133,28 @@
         _drawerOpen = !_drawerOpen;
     }
 
+    private void ToggleMobileSearch()
+    {
+        if (_mobileSearchOpen)
+        {
+            CloseMobileSearch();
+            return;
+        }
+
+        _mobileSearchOpen = true;
+        _focusMobileSearch = true;
+    }
+
+    private void CloseMobileSearch()
+    {
+        if (!_mobileSearchOpen)
+            return;
+
+        _mobileSearchOpen = false;
+        _focusMobileSearch = false;
+        _searchDropdown?.Close();
+    }
+
     private async Task ToggleTheme()
     {
         _isDarkMode = !_isDarkMode;
@@ -137,6 +171,12 @@
             _isDarkMode = stored == "dark";
             await JS.InvokeVoidAsync("eval", $"document.documentElement.className = '{(_isDarkMode ? "theme-dark" : "theme-light")}'");
             StateHasChanged();
+        }
+
+        if (_focusMobileSearch && _searchDropdown is not null)
+        {
+            _focusMobileSearch = false;
+            await _searchDropdown.FocusAsync();
         }
     }
 

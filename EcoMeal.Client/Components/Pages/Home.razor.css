@@ -2,3 +2,9 @@
     max-width: 1360px;
     margin: 0 auto;
 }
+
+@media (min-width: 701px) {
+    .discover-section {
+        margin-top: calc(0.75rem - clamp(1rem, 2.5vw, 2.5rem));
+    }
+}

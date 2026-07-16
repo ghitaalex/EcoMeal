@@ -33,11 +33,11 @@ public partial class BusinessList : IAsyncDisposable
     private IEnumerable<BusinessModel> FavoriteBusinesses =>
         (Businesses ?? []).Where(b => b.IsFavorite);
 
-    private IEnumerable<BusinessModel> FilteredBusinesses
+    private IEnumerable<BusinessModel> CategoryFilteredBusinesses
     {
         get
         {
-            IEnumerable<BusinessModel> results = (Businesses ?? []).Where(b => !b.IsFavorite);
+            IEnumerable<BusinessModel> results = Businesses ?? [];
 
             if (!string.IsNullOrWhiteSpace(_selectedType))
             {
@@ -49,8 +49,11 @@ public partial class BusinessList : IAsyncDisposable
         }
     }
 
+    private IEnumerable<BusinessModel> FilteredBusinesses =>
+        CategoryFilteredBusinesses.Where(b => !b.IsFavorite);
+
     private IEnumerable<BusinessModel> MappableBusinesses =>
-        FilteredBusinesses.Where(b => b.Latitude.HasValue && b.Longitude.HasValue);
+        CategoryFilteredBusinesses.Where(b => b.Latitude.HasValue && b.Longitude.HasValue);
 
     protected override async Task OnInitializedAsync()
     {

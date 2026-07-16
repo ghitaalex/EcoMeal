@@ -1,3 +1,8 @@
+.app-frame {
+    width: 100%;
+    min-height: 100vh;
+}
+
 .main-appbar {
     position: sticky;
     z-index: var(--mud-zindex-appbar, 1100);
@@ -90,6 +95,9 @@
 
 ::deep .appbar-actions .header-action:hover svg { color: var(--accent) !important; }
 
+::deep .mobile-search-toggle { display: none; }
+.mobile-search-trigger { display: contents; }
+
 ::deep .login-btn {
     min-width: 78px;
     margin-left: 0.35rem;
@@ -156,14 +164,23 @@
 }
 
 @media (max-width: 700px) {
-    .main-appbar {
-        --mobile-appbar-height: calc(92px + 1.05rem + max(0.45rem, env(safe-area-inset-top, 0px)));
-        position: fixed;
-        top: 0;
-        width: 100%;
-        height: var(--mobile-appbar-height);
+    .app-frame {
+        height: 100vh;
+        height: 100dvh;
         min-height: 0;
-        padding: max(0.45rem, env(safe-area-inset-top, 0px)) 0.75rem 0.65rem;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .main-appbar {
+        position: relative;
+        top: auto;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        flex: 0 0 auto;
+        padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 0.75rem 0.65rem;
         overflow: visible;
         background: var(--bg-appbar) !important;
         -webkit-backdrop-filter: none;
@@ -173,12 +190,14 @@
     .appbar-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: 44px 48px;
+        grid-template-rows: 44px;
         height: auto;
         align-content: start;
         column-gap: 0.5rem;
         row-gap: 0.4rem;
     }
+
+    .appbar-row.search-open { grid-template-rows: 44px 48px; }
 
     .appbar-brand-group {
         min-width: 0;
@@ -195,6 +214,7 @@
     }
 
     .navbar-search {
+        display: none;
         width: 100%;
         min-width: 0;
         max-width: none;
@@ -203,12 +223,20 @@
         margin: 0;
     }
 
+    .navbar-search.mobile-search-open { display: block; }
+
+    ::deep .mobile-search-toggle { display: inline-flex; }
+
     ::deep .brand-btn { min-width: 0; height: 44px; overflow: visible; }
     .brand-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .app-main {
-        --mobile-appbar-height: calc(92px + 1.05rem + max(0.45rem, env(safe-area-inset-top, 0px)));
+        flex: 1 1 auto;
+        min-height: 0;
         margin-top: 0;
-        padding: calc(var(--mobile-appbar-height) + 1rem) 0.85rem 2rem;
+        padding: 1rem 0.85rem 2rem;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
     }
 }
 

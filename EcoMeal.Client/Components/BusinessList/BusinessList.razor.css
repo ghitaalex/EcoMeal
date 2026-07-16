@@ -161,14 +161,6 @@
     padding: 0.7rem 0;
 }
 
-.filter-count {
-    justify-self: start;
-    color: var(--text-muted);
-    font-size: 0.78rem;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
 .filter-scroll {
     grid-column: 2;
     display: flex;
@@ -374,7 +366,6 @@
     ::deep .add-business-btn .mud-button-icon-start { margin: 0; font-size: 1.15rem; }
     ::deep .add-business-btn { width: 42px; min-width: 42px; height: 42px; padding: 0; }
     .filter-row { width: 100%; display: block; margin-left: 0; overflow: visible; padding-top: 0; }
-    .filter-count { display: block; padding: 0 0 0.65rem; }
     .filter-scroll { width: 100%; min-width: 0; flex-wrap: wrap; justify-content: center; gap: clamp(0.65rem, 4vw, 1rem); overflow: visible; padding: 0.2rem 0 0.65rem; }
     .category-filter { flex: 0 0 auto; flex-direction: column; gap: 0.35rem; font-size: 0.72rem; scroll-snap-align: start; }
     .category-icon { width: 54px; height: 54px; }
