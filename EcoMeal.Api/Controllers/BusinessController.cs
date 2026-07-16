@@ -6,6 +6,7 @@ using EcoMeal.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EcoMeal.Api.Controllers
 {
@@ -51,6 +52,73 @@ namespace EcoMeal.Api.Controllers
                 }).ToListAsync();
 
             return Ok(businessesDTOs);
+        }
+
+        [HttpGet("favorites")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<int>>> GetFavoriteBusinesses()
+        {
+            var userId = GetCurrentUserID();
+            var favoriteBusinessIds = await _context.Users
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.FavoriteBusinesses)
+                .Select(b => b.Id)
+                .ToListAsync();
+
+            return Ok(favoriteBusinessIds);
+        }
+
+        [HttpPost("{id}/favorite")]
+        [Authorize]
+        public async Task<ActionResult> AddFavoriteBusiness(int id)
+        {
+            var userId = GetCurrentUserID();
+            var user = await _context.Users
+                .Include(u => u.FavoriteBusinesses)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user is null)
+            {
+                return Unauthorized();
+            }
+
+            var business = await _context.Business.FindAsync(id);
+            if (business is null)
+            {
+                return NotFound("Could not find business");
+            }
+
+            if (!user.FavoriteBusinesses.Any(b => b.Id == id))
+            {
+                user.FavoriteBusinesses.Add(business);
+                await _context.SaveChangesAsync();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}/favorite")]
+        [Authorize]
+        public async Task<ActionResult> RemoveFavoriteBusiness(int id)
+        {
+            var userId = GetCurrentUserID();
+            var user = await _context.Users
+                .Include(u => u.FavoriteBusinesses)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user is null)
+            {
+                return Unauthorized();
+            }
+
+            var business = user.FavoriteBusinesses.FirstOrDefault(b => b.Id == id);
+            if (business is not null)
+            {
+                user.FavoriteBusinesses.Remove(business);
+                await _context.SaveChangesAsync();
+            }
+
+            return NoContent();
         }
 
         [HttpPost("driving-distances")]
@@ -205,6 +273,12 @@ namespace EcoMeal.Api.Controllers
 
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        private int GetCurrentUserID()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(userIdValue!);
         }
     }
 }

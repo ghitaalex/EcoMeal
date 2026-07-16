@@ -13,6 +13,7 @@
         public string? BusinessImageUrl { get; set; }
         public double AverageRating { get; set; }
         public int ReviewCount { get; set; }
+        public bool IsFavorite { get; set; }
         public double? DistanceKm { get; set; }
         public double? DurationMinutes { get; set; }
     }

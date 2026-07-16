@@ -11,6 +11,7 @@ namespace EcoMeal.Client.Models
         public string Contact { get; set; } = "";
         public string BusinessTypeName { get; set; } = "";
         public string? BusinessImageUrl { get; set; }
+        public bool IsFavorite { get; set; }
         public List<PackageGetModel> Packages { get; set; } = new List<PackageGetModel>();
     }
 }

@@ -45,6 +45,35 @@ namespace EcoMeal.Client.Services
             return (false, $"Delete failed ({(int)response.StatusCode}): {body}");
         }
 
+        public async Task<List<int>> GetFavoriteIdsAsync()
+        {
+            try
+            {
+                var response = await _http.GetAsync("api/business/favorites");
+                if (!response.IsSuccessStatusCode)
+                    return new List<int>();
+
+                var favoriteIds = await response.Content.ReadFromJsonAsync<List<int>>();
+                return favoriteIds ?? new List<int>();
+            }
+            catch
+            {
+                return new List<int>();
+            }
+        }
+
+        public async Task<bool> AddFavoriteAsync(int id)
+        {
+            var response = await _http.PostAsync($"api/business/{id}/favorite", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> RemoveFavoriteAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/business/{id}/favorite");
+            return response.IsSuccessStatusCode;
+        }
+
         public async Task<BusinessDetailsModel?> GetOneById(int id)
         {
             var business = await _http.GetFromJsonAsync<BusinessDetailsModel>($"api/business/{id}");

@@ -28,6 +28,11 @@ namespace EcoMeal.Api.Infrastructure
                 .WithMany(p => p.Businesses)
                 .HasForeignKey(p => p.BusinessTypeId);
 
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.FavoriteBusinesses)
+                .WithMany(b => b.FavoritedByUsers)
+                .UsingEntity(j => j.ToTable("FavoriteBusiness"));
+
             modelBuilder.Entity<Order>().HasKey(e => e.Id);
 
             modelBuilder.Entity<Order>()

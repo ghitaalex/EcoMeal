@@ -7,6 +7,24 @@
     <div class="card-hero" style="@(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "background: var(--gradient-default);" : $"background: url('{Business.BusinessImageUrl}') center/cover no-repeat;")">
         <div class="card-hero-overlay"></div>
         <span class="business-type-badge">@Business.BusinessTypeName</span>
+        <AuthorizeView>
+            <button type="button"
+                    class="favorite-button @(Business.IsFavorite ? "active" : null)"
+                    title="@(Business.IsFavorite ? "Remove from favorites" : "Add to favorites")"
+                    aria-label="@(Business.IsFavorite ? "Remove from favorites" : "Add to favorites")"
+                    disabled="@_updatingFavorite"
+                    @onclick="ToggleFavorite"
+                    @onclick:stopPropagation="true">
+                @if (_updatingFavorite)
+                {
+                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                }
+                else
+                {
+                    <i class="bi @(Business.IsFavorite ? "bi-heart-fill" : "bi-heart")"></i>
+                }
+            </button>
+        </AuthorizeView>
         <span class="rating-badge"><i class="bi bi-star-fill"></i> @Business.AverageRating.ToString("0.0") (@Business.ReviewCount)</span>
     </div>
     <div class="card-content">

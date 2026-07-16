@@ -55,18 +55,6 @@ else
         </div>
     </div>
 
-    <div class="discover-header">
-        <div>
-            <span class="section-kicker">Fresh finds near you</span>
-            <h2>Discover something delicious</h2>
-        </div>
-        <AuthorizeView Roles="Admin">
-            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Class="add-business-btn" Href="/business/add">
-                Add business
-            </MudButton>
-        </AuthorizeView>
-    </div>
-
     <div class="discovery-controls">
         <div class="location-control">
             @if (_userLocation is not null)
@@ -110,6 +98,48 @@ else
         </div>
     }
 
+    <AuthorizeView>
+        <Authorized>
+            <section class="favorites-section">
+                <div class="discover-header favorites-header">
+                    <div>
+                        <span class="section-kicker">Saved places</span>
+                        <h2>Your favorite businesses</h2>
+                    </div>
+                </div>
+
+                @if (FavoriteBusinesses.Any())
+                {
+                    <div class="business-grid">
+                        @foreach (var business in FavoriteBusinesses)
+                        {
+                            <BusinessCard Business="business" OnFavoriteChanged="HandleFavoriteChanged" />
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="favorites-empty">
+                        <MudIcon Icon="@Icons.Material.Outlined.FavoriteBorder" />
+                        <span>Use the heart button to save businesses here.</span>
+                    </div>
+                }
+            </section>
+        </Authorized>
+    </AuthorizeView>
+
+    <div class="discover-header">
+        <div>
+            <span class="section-kicker">Fresh finds near you</span>
+            <h2>Discover something delicious</h2>
+        </div>
+        <AuthorizeView Roles="Admin">
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Class="add-business-btn" Href="/business/add">
+                Add business
+            </MudButton>
+        </AuthorizeView>
+    </div>
+
     @if (_viewMode == "map")
     {
         <div class="map-shell">
@@ -146,7 +176,7 @@ else
         <div class="business-grid">
             @foreach (BusinessModel business in FilteredBusinesses)
             {
-                <BusinessCard Business="business" />
+                <BusinessCard Business="business" OnFavoriteChanged="HandleFavoriteChanged" />
             }
         </div>
     }

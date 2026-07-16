@@ -7,5 +7,6 @@ namespace EcoMeal.Api.Entities
         public string? Name { get; set; }
         public string? Contact { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Business> FavoriteBusinesses { get; set; } = new List<Business>();
     }
 }

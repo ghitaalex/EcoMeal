@@ -26,6 +26,26 @@
 
 .discover-header p { margin: 0.45rem 0 0; color: var(--text-muted); }
 
+.favorites-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.favorites-empty {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 1rem;
+    border: 1px dashed var(--border-strong);
+    border-radius: 14px;
+    color: var(--text-muted);
+    background: var(--bg-surface);
+    font-size: 0.82rem;
+}
+
+.favorites-empty ::deep svg { color: var(--accent); }
+
 .discovery-controls {
     display: flex;
     align-items: stretch;

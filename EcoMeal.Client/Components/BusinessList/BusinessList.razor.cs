@@ -30,11 +30,14 @@ public partial class BusinessList : IAsyncDisposable
     private IEnumerable<string> BusinessTypes =>
         (Businesses ?? []).Select(b => b.BusinessTypeName).Distinct().OrderBy(t => t);
 
+    private IEnumerable<BusinessModel> FavoriteBusinesses =>
+        (Businesses ?? []).Where(b => b.IsFavorite);
+
     private IEnumerable<BusinessModel> FilteredBusinesses
     {
         get
         {
-            IEnumerable<BusinessModel> results = Businesses ?? [];
+            IEnumerable<BusinessModel> results = (Businesses ?? []).Where(b => !b.IsFavorite);
 
             if (!string.IsNullOrWhiteSpace(_selectedType))
             {
@@ -85,6 +88,10 @@ public partial class BusinessList : IAsyncDisposable
         try
         {
             Businesses = await BusinessService.GetAllAsync();
+            var favoriteIds = await BusinessService.GetFavoriteIdsAsync();
+            foreach (var business in Businesses)
+                business.IsFavorite = favoriteIds.Contains(business.Id);
+
             if (_userLocation is not null)
                 await LoadDrivingDistances();
 
@@ -175,6 +182,11 @@ public partial class BusinessList : IAsyncDisposable
     private void SelectFilter(string? type)
     {
         _selectedType = type;
+        _mapRenderRequested = _viewMode == "map";
+    }
+
+    private void HandleFavoriteChanged()
+    {
         _mapRenderRequested = _viewMode == "map";
     }
 

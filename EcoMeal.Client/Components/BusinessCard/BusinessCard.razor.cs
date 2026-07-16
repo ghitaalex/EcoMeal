@@ -10,6 +10,9 @@ namespace EcoMeal.Client.Components.BusinessCard
         [Parameter]
         public required BusinessModel Business { get; set; }
 
+        [Parameter]
+        public EventCallback OnFavoriteChanged { get; set; }
+
         [Inject]
         public required BusinessService BusinessService { get; set; }
         [Inject]
@@ -22,6 +25,7 @@ namespace EcoMeal.Client.Components.BusinessCard
         private MudMessageBox? _deleteConfirmBox;
         private bool _deleted;
         private bool _deleting;
+        private bool _updatingFavorite;
         private decimal? _lowestPrice;
         private string? _earliestPickup;
 
@@ -61,6 +65,27 @@ namespace EcoMeal.Client.Components.BusinessCard
             }
 
             _deleting = false;
+        }
+
+        private async Task ToggleFavorite()
+        {
+            _updatingFavorite = true;
+
+            var success = Business.IsFavorite
+                ? await BusinessService.RemoveFavoriteAsync(Business.Id)
+                : await BusinessService.AddFavoriteAsync(Business.Id);
+
+            if (success)
+            {
+                Business.IsFavorite = !Business.IsFavorite;
+                await OnFavoriteChanged.InvokeAsync();
+            }
+            else
+            {
+                Snackbar.Add("Could not update favorites.", Severity.Error);
+            }
+
+            _updatingFavorite = false;
         }
 
         public void NavigateToDetails()

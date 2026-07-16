@@ -15,6 +15,7 @@ namespace EcoMeal.Api.Entities
         public int BusinessTypeId { get; set; }
         public required BusinessType BusinessType { get; set; }
         public string? BusinessImageUrl { get; set; }
-        public ICollection<Package> Packages { get; set; } = new List<Package>(); 
+        public ICollection<Package> Packages { get; set; } = new List<Package>();
+        public ICollection<User> FavoritedByUsers { get; set; } = new List<User>();
     }
 }

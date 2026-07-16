@@ -66,6 +66,28 @@
 
 .rating-badge i { color: #f59e0b; }
 
+.favorite-button {
+    position: absolute;
+    z-index: 2;
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 50%;
+    color: #17211b;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+}
+
+.favorite-button:hover,
+.favorite-button.active { color: #dc3545; }
+.favorite-button:disabled { cursor: wait; }
+
 .card-content {
     min-width: 0;
     display: flex;

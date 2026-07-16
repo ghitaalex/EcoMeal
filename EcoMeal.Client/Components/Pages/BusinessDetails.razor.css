@@ -16,6 +16,27 @@
     box-shadow: var(--shadow-lg);
 }
 
+.detail-favorite-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    color: #17211b;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+}
+
+.detail-favorite-button:hover,
+.detail-favorite-button.active { color: #dc3545; }
+.detail-favorite-button:disabled { cursor: wait; }
+
 ::deep .detail-section-heading { gap: 0.75rem; }
 
 ::deep .business-details-container {
