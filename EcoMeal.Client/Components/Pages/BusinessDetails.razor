@@ -3,7 +3,7 @@
 @using EcoMeal.Client.Models
 @implements IAsyncDisposable
 
-<PageTitle>@(Business?.Name ?? "Business Details")</PageTitle>
+<PageTitle>@(Business is null ? "Business Details | EcoMeal" : $"{Business.Name} | EcoMeal")</PageTitle>
 
 @if (Business is null)
 {
@@ -13,7 +13,7 @@
 }
 else
 {
-    <MudContainer MaxWidth="MaxWidth.Medium" Class="py-8">
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="business-details-container py-8">
         <MudPaper Class="business-hero pa-8" Elevation="0"
                   Style="@($"color: #fff; border-radius: 24px; background: {(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "var(--gradient-default)" : $"url('{Business.BusinessImageUrl}') center/cover no-repeat")}; position: relative; overflow: hidden;")">
             <div style="position: absolute; inset: 0; background: var(--gradient-hero);"></div>
@@ -67,7 +67,7 @@ else
                 }
                 else
                 {
-                    <div id="@_mapElementId" class="detail-business-map" aria-label="Map showing @Business.Name"></div>
+                    <div @key="Business.Id" @ref="_mapElement" id="@MapElementId" class="detail-business-map" aria-label="Map showing @Business.Name"></div>
                 }
             }
             else
@@ -286,14 +286,16 @@ else
     [Inject]
     public required IJSRuntime JS { get; set; }
 
-    private readonly string _mapElementId = $"business-detail-map-{Guid.NewGuid():N}";
+    private string MapElementId => $"business-detail-map-{Id}";
     private BusinessDetailsModel? Business;
     private List<PackageGetModel>? Packages;
     private List<ReviewGetModel>? Reviews;
     private List<OrderGetModel>? MyBusinessOrders;
     private int? _orderingPackageId;
     private IJSObjectReference? _mapModule;
+    private ElementReference _mapElement;
     private string? _mapError;
+    private bool _mapRendered;
 
     private string GoogleMapsUrl => Business is null
         ? "https://www.google.com/maps"
@@ -302,6 +304,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         Business = await businessService.GetOneById(Id);
+        StateHasChanged();
+
         Packages = await packageService.GetByBusinessId(Id);
         Reviews = await reviewService.GetByBusinessAsync(Id);
         try
@@ -314,7 +318,7 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || Business is null ||
+        if (_mapRendered || Business is null ||
             !Business.Latitude.HasValue || !Business.Longitude.HasValue)
             return;
 
@@ -333,7 +337,8 @@ else
                     Longitude = Business.Longitude.Value,
                 }
             };
-            await _mapModule.InvokeVoidAsync("renderBusinessMap", _mapElementId, marker, null);
+            await _mapModule.InvokeVoidAsync("renderBusinessMap", _mapElement, marker, null, false);
+            _mapRendered = true;
         }
         catch (JSException)
         {
@@ -392,7 +397,7 @@ else
 
         try
         {
-            await _mapModule.InvokeVoidAsync("disposeBusinessMap", _mapElementId);
+            await _mapModule.InvokeVoidAsync("disposeBusinessMap", MapElementId);
             await _mapModule.DisposeAsync();
         }
         catch (JSDisconnectedException)

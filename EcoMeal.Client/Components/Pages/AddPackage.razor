@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 
-<PageTitle>Add Package</PageTitle>
+<PageTitle>Add Package | EcoMeal</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
     <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ArrowBack"
@@ -38,8 +38,8 @@
             <MudNumericField @bind-Value="PackageAddModel.Price"
                              Label="Price"
                              Variant="Variant.Outlined"
-                             Adornment="Adornment.Start"
-                             AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                             Adornment="Adornment.End"
+                             AdornmentText="RON"
                              Min="0.01"
                              Class="mb-4" />
 

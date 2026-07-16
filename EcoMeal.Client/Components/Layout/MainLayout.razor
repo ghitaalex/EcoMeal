@@ -9,7 +9,7 @@
 <MudSnackbarProvider />
 
 <MudLayout Class="@($"eco-layout {(_isDarkMode ? "theme-dark" : "theme-light")}")">
-    <MudAppBar Elevation="0" Fixed="true" Class="main-appbar">
+    <header class="main-appbar">
         <div class="appbar-row">
             <div class="appbar-brand-group">
                 <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" aria-label="Open navigation" Class="nav-trigger" />
@@ -51,7 +51,7 @@
         }
             </div>
         </div>
-    </MudAppBar>
+    </header>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Variant="DrawerVariant.Temporary" Width="280px" Class="main-drawer">
         <div class="drawer-heading">
             <span class="brand-mark"><MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" /></span>
@@ -63,9 +63,9 @@
             <span>Every rescued meal makes a difference.</span>
         </div>
     </MudDrawer>
-    <MudMainContent Class="app-main">
+    <main class="app-main">
         @Body
-    </MudMainContent>
+    </main>
 </MudLayout>
 
 @code {

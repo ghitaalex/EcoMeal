@@ -1,4 +1,9 @@
-::deep .main-appbar {
+.main-appbar {
+    position: sticky;
+    z-index: var(--mud-zindex-appbar, 1100);
+    top: 0;
+    right: 0;
+    left: 0;
     height: 72px;
     padding: 0 clamp(0.75rem, 2.5vw, 2rem);
     background: color-mix(in srgb, var(--bg-appbar) 92%, transparent) !important;
@@ -143,34 +148,48 @@
 
 .drawer-note ::deep svg { color: var(--accent); }
 
-::deep .app-main {
+.app-main {
     min-height: 100vh;
-    margin-top: 72px;
+    margin-top: 0;
     padding: clamp(1rem, 2.5vw, 2.5rem);
     background: var(--bg-page);
 }
 
 @media (max-width: 700px) {
-    ::deep .main-appbar {
-        height: 124px;
-        padding: 0.45rem 0.75rem 0.65rem;
+    .main-appbar {
+        --mobile-appbar-height: calc(92px + 1.05rem + max(0.45rem, env(safe-area-inset-top, 0px)));
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: var(--mobile-appbar-height);
+        min-height: 0;
+        padding: max(0.45rem, env(safe-area-inset-top, 0px)) 0.75rem 0.65rem;
+        overflow: visible;
+        background: var(--bg-appbar) !important;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
     }
 
     .appbar-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: 46px 48px;
-        align-content: center;
+        grid-template-rows: 44px 48px;
+        height: auto;
+        align-content: start;
         column-gap: 0.5rem;
         row-gap: 0.4rem;
     }
 
     .appbar-brand-group {
         min-width: 0;
-        overflow: hidden;
+        overflow: visible;
+        grid-row: 1;
+        align-self: center;
     }
 
     .appbar-actions {
+        grid-row: 1;
+        align-self: center;
         justify-self: end;
         margin-left: 0;
     }
@@ -184,9 +203,13 @@
         margin: 0;
     }
 
-    ::deep .brand-btn { min-width: 0; overflow: hidden; }
+    ::deep .brand-btn { min-width: 0; height: 44px; overflow: visible; }
     .brand-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    ::deep .app-main { margin-top: 124px; padding: 1rem 0.85rem 2rem; }
+    .app-main {
+        --mobile-appbar-height: calc(92px + 1.05rem + max(0.45rem, env(safe-area-inset-top, 0px)));
+        margin-top: 0;
+        padding: calc(var(--mobile-appbar-height) + 1rem) 0.85rem 2rem;
+    }
 }
 
 @media (max-width: 480px) {

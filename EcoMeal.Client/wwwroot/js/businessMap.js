@@ -27,18 +27,26 @@ export function getCurrentLocation() {
     });
 }
 
-export function renderBusinessMap(elementId, businesses, userLocation) {
+export function renderBusinessMap(mapTarget, businesses, userLocation, showBusinessLink = true) {
     if (!window.L)
         throw new Error("The map library could not be loaded.");
 
-    disposeBusinessMap(elementId);
-
-    const element = document.getElementById(elementId);
+    const element = typeof mapTarget === "string"
+        ? document.getElementById(mapTarget)
+        : mapTarget;
     if (!element)
-        return;
+        throw new Error("The map element could not be found.");
+
+    const mapKey = element.id || mapTarget;
+    disposeBusinessMap(mapKey);
 
     const map = L.map(element, { scrollWheelZoom: true, zoomControl: true });
-    maps.set(elementId, map);
+    const resizeObserver = window.ResizeObserver
+        ? new ResizeObserver(() => map.invalidateSize())
+        : null;
+
+    resizeObserver?.observe(element);
+    maps.set(mapKey, { map, resizeObserver });
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -68,7 +76,7 @@ export function renderBusinessMap(elementId, businesses, userLocation) {
             riseOnHover: true
         }).addTo(map);
 
-        marker.bindPopup(createBusinessPopup(business), { minWidth: 210 });
+        marker.bindPopup(createBusinessPopup(business, showBusinessLink), { minWidth: 210 });
     }
 
     if (userLocation && Number.isFinite(userLocation.latitude) && Number.isFinite(userLocation.longitude)) {
@@ -103,7 +111,7 @@ export function renderBusinessMap(elementId, businesses, userLocation) {
     requestAnimationFrame(() => map.invalidateSize());
 }
 
-function createBusinessPopup(business) {
+function createBusinessPopup(business, showBusinessLink) {
     const popup = document.createElement("div");
     popup.className = "business-map-popup";
 
@@ -126,19 +134,25 @@ function createBusinessPopup(business) {
         popup.append(distance);
     }
 
-    const link = document.createElement("a");
-    link.href = `/business/${business.id}`;
-    link.textContent = "View business";
-    popup.append(link);
+    if (showBusinessLink) {
+        const link = document.createElement("a");
+        link.href = `/business/${business.id}`;
+        link.textContent = "View business";
+        popup.append(link);
+    }
 
     return popup;
 }
 
-export function disposeBusinessMap(elementId) {
-    const map = maps.get(elementId);
-    if (!map)
+export function disposeBusinessMap(mapTarget) {
+    const mapKey = typeof mapTarget === "string"
+        ? mapTarget
+        : mapTarget?.id || mapTarget;
+    const mapEntry = maps.get(mapKey);
+    if (!mapEntry)
         return;
 
-    map.remove();
-    maps.delete(elementId);
+    mapEntry.resizeObserver?.disconnect();
+    mapEntry.map.remove();
+    maps.delete(mapKey);
 }

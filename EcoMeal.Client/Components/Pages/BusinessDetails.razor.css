@@ -18,6 +18,11 @@
 
 ::deep .detail-section-heading { gap: 0.75rem; }
 
+::deep .business-details-container {
+    width: 100%;
+    padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+}
+
 .business-location-section {
     margin-top: 2rem;
     overflow: hidden;
@@ -116,12 +121,67 @@
 .detail-business-map ::deep .business-map-popup a { margin-top: 0.35rem; padding: 0.5rem 0.7rem; border-radius: 8px; color: #fff; background: var(--gradient-primary); font-size: 0.74rem; font-weight: 700; text-align: center; text-decoration: none; }
 
 @media (max-width: 600px) {
-    ::deep .business-hero { min-height: 330px; padding: 1.35rem !important; border-radius: 22px !important; }
+    ::deep .business-details-container {
+        padding: 0.75rem 0.65rem 1.5rem !important;
+    }
+
+    ::deep .business-hero {
+        min-height: 255px;
+        padding: 1.1rem !important;
+        border-radius: 18px !important;
+    }
+
+    ::deep .business-hero .mud-typography-h3 {
+        font-size: clamp(1.75rem, 8vw, 2.15rem) !important;
+        line-height: 1.08 !important;
+    }
+
+    ::deep .business-hero .mud-typography-body1 {
+        font-size: 0.95rem;
+        line-height: 1.45;
+    }
+
+    ::deep .business-hero .mud-chip { max-width: 100%; }
+
+    ::deep .business-hero .mud-chip-content {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     ::deep .detail-section-heading { align-items: flex-start !important; flex-wrap: wrap; }
     ::deep .detail-section-heading > .mud-typography { flex: 0 0 100%; }
     ::deep .detail-section-heading .mud-button-root { flex: 1 1 145px; }
     ::deep .mud-card:hover { transform: none; }
-    .business-location-heading { align-items: flex-start; flex-direction: column; padding: 1rem; }
-    .open-map-link { width: 100%; }
-    .detail-business-map { height: 300px; }
+
+    .business-location-section {
+        margin-top: 1rem;
+        border-radius: 18px;
+    }
+
+    .business-location-heading {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 0.85rem;
+        padding: 1rem;
+    }
+
+    .business-location-heading ::deep .mud-typography-h5 {
+        font-size: clamp(1.35rem, 6vw, 1.65rem) !important;
+        line-height: 1.15;
+    }
+
+    .business-location-heading ::deep .mud-typography-body2 {
+        overflow-wrap: anywhere;
+    }
+
+    .open-map-link {
+        width: 100%;
+        min-height: 46px;
+        padding: 0.7rem 0.85rem;
+        font-size: 0.82rem;
+    }
+
+    .detail-business-map { height: clamp(230px, 68vw, 285px); }
+    .business-map-fallback { min-height: 230px; padding: 1.25rem; }
 }
