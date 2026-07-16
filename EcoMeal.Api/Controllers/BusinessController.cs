@@ -16,10 +16,14 @@ namespace EcoMeal.Api.Controllers
     {
         private readonly EcoMealDbContext _context;
         private readonly BlobStorageService _blobStorageService;
+        private readonly GeocodingService _geocodingService;
+        private readonly DrivingDistanceService _drivingDistanceService;
         private readonly string _containerName = "ecomeal-businesses";
-        public BusinessController(EcoMealDbContext context, BlobStorageService blobStorageService) {
+        public BusinessController(EcoMealDbContext context, BlobStorageService blobStorageService, GeocodingService geocodingService, DrivingDistanceService drivingDistanceService) {
             _context = context;
             _blobStorageService = blobStorageService;
+            _geocodingService = geocodingService;
+            _drivingDistanceService = drivingDistanceService;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BusinessDTO>>> GetBusinesses()
@@ -29,6 +33,8 @@ namespace EcoMeal.Api.Controllers
                 Id = b.Id,
                 Name = b.Name,
                 Address = b.Address,
+                Latitude = b.Latitude,
+                Longitude = b.Longitude,
                 Description = b.Description,
                 Contact = b.Contact,
                 BusinessTypeName = b.BusinessType.Name,
@@ -45,6 +51,33 @@ namespace EcoMeal.Api.Controllers
                 }).ToListAsync();
 
             return Ok(businessesDTOs);
+        }
+
+        [HttpPost("driving-distances")]
+        public async Task<ActionResult<IEnumerable<DrivingDistanceDTO>>> GetDrivingDistances(UserLocationDTO userLocation)
+        {
+            if (userLocation.Latitude < -90 || userLocation.Latitude > 90 ||
+                userLocation.Longitude < -180 || userLocation.Longitude > 180)
+            {
+                return BadRequest("Invalid location");
+            }
+
+            var businesses = await _context.Business
+                .Where(b => b.Latitude.HasValue && b.Longitude.HasValue)
+                .Select(b => new BusinessLocation
+                {
+                    Id = b.Id,
+                    Latitude = b.Latitude!.Value,
+                    Longitude = b.Longitude!.Value
+                })
+                .ToListAsync();
+
+            var distances = await _drivingDistanceService.GetDrivingDistancesAsync(
+                userLocation.Latitude,
+                userLocation.Longitude,
+                businesses);
+
+            return Ok(distances);
         }
 
         [HttpDelete("{id}")]
@@ -79,6 +112,8 @@ namespace EcoMeal.Api.Controllers
                     Id = b.Id,
                     Name = b.Name,
                     Address = b.Address,
+                    Latitude = b.Latitude,
+                    Longitude = b.Longitude,
                     Description = b.Description,
                     Contact = b.Contact,
                     BusinessTypeName = b.BusinessType.Name,
@@ -116,10 +151,14 @@ namespace EcoMeal.Api.Controllers
                 imageUrl = await _blobStorageService.UploadImageAsync(_containerName, business.BusinessImage);
             }
 
+            var coordinates = await _geocodingService.GeocodeAsync(business.Address);
+
             _context.Business.Add(new Business
             {
                 Name = business.Name,
                 Address = business.Address,
+                Latitude = coordinates?.Latitude,
+                Longitude = coordinates?.Longitude,
                 Description = business.Description,
                 Contact = business.Contact,
                 BusinessTypeId = business.BusinessTypeId,
@@ -149,11 +188,20 @@ namespace EcoMeal.Api.Controllers
                 existingBusiness.BusinessImageUrl = await _blobStorageService.UploadImageAsync(_containerName, business.BusinessImage);
             }
 
+            var addressChanged = !string.Equals(existingBusiness.Address.Trim(), business.Address.Trim(), StringComparison.OrdinalIgnoreCase);
+
             existingBusiness.Name = business.Name;
             existingBusiness.Address = business.Address;
             existingBusiness.Description = business.Description;
             existingBusiness.Contact = business.Contact;
             existingBusiness.BusinessTypeId = business.BusinessTypeId;
+
+            if (addressChanged || existingBusiness.Latitude is null || existingBusiness.Longitude is null)
+            {
+                var coordinates = await _geocodingService.GeocodeAsync(business.Address);
+                existingBusiness.Latitude = coordinates?.Latitude;
+                existingBusiness.Longitude = coordinates?.Longitude;
+            }
 
             await _context.SaveChangesAsync();
             return NoContent();

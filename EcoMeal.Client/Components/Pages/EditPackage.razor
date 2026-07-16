@@ -60,13 +60,13 @@
                                  Class="mb-4" />
 
                 <MudGrid Spacing="3" Class="mb-4">
-                    <MudItem xs="6">
+                    <MudItem xs="12" sm="6">
                         <label class="form-label">Pickup Start</label>
                         <InputDate @bind-Value="PackageEditModel.StartPickup"
                                    Type="InputDateType.DateTimeLocal"
                                    class="form-control" />
                     </MudItem>
-                    <MudItem xs="6">
+                    <MudItem xs="12" sm="6">
                         <label class="form-label">Pickup End</label>
                         <InputDate @bind-Value="PackageEditModel.EndPickup"
                                    Type="InputDateType.DateTimeLocal"
@@ -98,7 +98,7 @@
                     }
                 </MudStack>
 
-                <MudStack Row="true" Spacing="3">
+                <MudStack Row="true" Spacing="3" Class="form-actions">
                     <MudButton ButtonType="ButtonType.Submit"
                                Variant="Variant.Filled"
                                Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 700; flex: 1; border-radius: 12px; box-shadow: var(--glow-sm);"

@@ -72,5 +72,22 @@ namespace EcoMeal.Client.Components.BusinessCard
         {
             Navigation.NavigateTo($"business/{Business.Id}/edit");
         }
+
+        private string FormattedDistance
+        {
+            get
+            {
+                if (Business.DistanceKm is null)
+                    return string.Empty;
+
+                var distance = Business.DistanceKm < 1
+                    ? $"{Math.Round(Business.DistanceKm.Value * 1000):0} m"
+                    : $"{Business.DistanceKm.Value:0.0} km";
+
+                return Business.DurationMinutes.HasValue
+                    ? $"{distance} · {Math.Ceiling(Business.DurationMinutes.Value):0} min"
+                    : $"About {distance}";
+            }
+        }
     }
 }

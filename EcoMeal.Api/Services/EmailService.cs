@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json;
 using System.Net.Http.Headers;
 
 namespace EcoMeal.Api.Services
@@ -7,31 +6,29 @@ namespace EcoMeal.Api.Services
     public class EmailService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
-        private readonly string _secretKey;
-        private readonly string _senderEmail;
+        private readonly string? _senderEmail;
+        private readonly bool _isConfigured;
         private readonly IWebHostEnvironment _env;
-        private readonly ILogger<EmailService> _logger;
 
-        public EmailService(
-            IConfiguration configuration,
-            IWebHostEnvironment env,
-            ILogger<EmailService> logger)
+        public EmailService(IConfiguration configuration, IWebHostEnvironment env)
         {
             _httpClient = new HttpClient();
-            _apiKey = configuration["MailjetApiKey"]
-                ?? throw new InvalidOperationException("MailjetApiKey is not configured.");
-            _secretKey = configuration["MailjetSecretKey"]
-                ?? throw new InvalidOperationException("MailjetSecretKey is not configured.");
-            _senderEmail = configuration["MailjetSenderEmail"]
-                ?? throw new InvalidOperationException("MailjetSenderEmail is not configured.");
+            _env = env;
+
+            var apiKey = configuration["MailjetApiKey"];
+            var secretKey = configuration["MailjetSecretKey"];
+            _senderEmail = configuration["MailjetSenderEmail"];
+
+            if (string.IsNullOrWhiteSpace(apiKey) ||
+                string.IsNullOrWhiteSpace(secretKey) ||
+                string.IsNullOrWhiteSpace(_senderEmail))
+                return;
 
             var credentials = Convert.ToBase64String(
-                Encoding.ASCII.GetBytes($"{_apiKey}:{_secretKey}"));
+                Encoding.ASCII.GetBytes($"{apiKey}:{secretKey}"));
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Basic", credentials);
-            _env = env;
-            _logger = logger;
+            _isConfigured = true;
         }
 
         public async Task<string> LoadTemplateAsync(string templateName, Dictionary<string, string> placeholders)
@@ -49,6 +46,9 @@ namespace EcoMeal.Api.Services
 
         public async Task SendEmailAsync(string toEmail, string toName, string subject, string body)
         {
+            if (!_isConfigured)
+                return;
+
             var payload = new
             {
                 Messages = new[]
@@ -63,21 +63,7 @@ namespace EcoMeal.Api.Services
                 }
             };
 
-            var json = JsonSerializer.Serialize(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            using var response = await _httpClient.PostAsync("https://api.mailjet.com/v3.1/send", content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var responseBody = await response.Content.ReadAsStringAsync();
-                _logger.LogError(
-                    "Mailjet rejected an email to {Recipient}. Status: {StatusCode}. Response: {ResponseBody}",
-                    toEmail,
-                    (int)response.StatusCode,
-                    responseBody);
-            }
-
+            using var response = await _httpClient.PostAsJsonAsync("https://api.mailjet.com/v3.1/send", payload);
             response.EnsureSuccessStatusCode();
         }
     }

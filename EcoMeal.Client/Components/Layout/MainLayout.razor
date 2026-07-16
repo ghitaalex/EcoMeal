@@ -8,21 +8,23 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudLayout Class="@(_isDarkMode ? "theme-dark" : "theme-light")">
-    <MudAppBar Elevation="0" Fixed="true" Style="@($"background: var(--bg-appbar); color: var(--text-primary); border-bottom: 1px solid var(--border-color);")">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" />
-        <MudButton Href="/" Variant="Variant.Text" Class="brand-btn" Style="text-transform: none; color: var(--text-primary); font-size: 1.25rem; font-family: 'Inter', sans-serif; min-width: auto; padding: 0 0.5rem;">
-            <MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" Style="color: var(--accent); margin-right: 0.25rem;" />
-            <span class="brand-text d-none d-sm-inline"><span style="font-weight: 300;">Eco</span><span style="font-weight: 800; color: var(--accent-text);">Meal</span></span>
-        </MudButton>
-        <MudSpacer />
-        <div class="navbar-search" style="flex: 3; max-width: 900px; min-width: 0; width: 100%;">
-            <SearchDropdown />
-        </div>
-        <MudSpacer />
-        <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
-                       Color="Color.Inherit" OnClick="ToggleTheme" Title="Toggle theme" />
-        <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" Href="/orders" />
+<MudLayout Class="@($"eco-layout {(_isDarkMode ? "theme-dark" : "theme-light")}")">
+    <MudAppBar Elevation="0" Fixed="true" Class="main-appbar">
+        <div class="appbar-row">
+            <div class="appbar-brand-group">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="ToggleDrawer" aria-label="Open navigation" Class="nav-trigger" />
+                <MudButton Href="/" Variant="Variant.Text" Class="brand-btn">
+                    <span class="brand-mark"><MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" /></span>
+                    <span class="brand-text"><span>Eco</span><strong>Meal</strong></span>
+                </MudButton>
+            </div>
+            <div class="navbar-search">
+                <SearchDropdown />
+            </div>
+            <div class="appbar-actions">
+                <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+                               Color="Color.Inherit" OnClick="ToggleTheme" aria-label="Toggle color theme" Class="header-action" />
+                <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Inherit" Href="/orders" aria-label="My orders" Class="header-action" />
         @if (AuthService.IsAuthenticated)
         {
             <MudMenu Icon="@Icons.Material.Filled.Person" Color="Color.Success" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight"
@@ -43,22 +45,32 @@
         }
         else
         {
-            <MudButton Href="/login" Variant="Variant.Outlined" Color="Color.Success" Size="Size.Small" StartIcon="@Icons.Material.Outlined.Login" Style="text-transform: none;">
-                Log In
+            <MudButton Href="/login" Variant="Variant.Filled" Size="Size.Small" Class="login-btn">
+                <span class="login-label">Log in</span>
             </MudButton>
         }
+            </div>
+        </div>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Always" Style="background: var(--bg-appbar); border-right: 1px solid var(--border-color);">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Variant="DrawerVariant.Temporary" Width="280px" Class="main-drawer">
+        <div class="drawer-heading">
+            <span class="brand-mark"><MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" /></span>
+            <div><strong>EcoMeal</strong><small>Good food, rescued.</small></div>
+        </div>
         <NavMenu />
+        <div class="drawer-note">
+            <MudIcon Icon="@Icons.Material.Filled.EnergySavingsLeaf" />
+            <span>Every rescued meal makes a difference.</span>
+        </div>
     </MudDrawer>
-    <MudMainContent Class="pa-4" Style="margin-top: 48px; background: var(--bg-page); min-height: 100vh;">
+    <MudMainContent Class="app-main">
         @Body
     </MudMainContent>
 </MudLayout>
 
 @code {
     private bool _drawerOpen = false;
-    private bool _isDarkMode = true;
+    private bool _isDarkMode = false;
 
     private MudTheme _theme = new()
     {
@@ -122,10 +134,7 @@
         {
             await AuthService.LoadTokenAsync();
             var stored = await JS.InvokeAsync<string?>("localStorage.getItem", "theme");
-            if (stored == "light")
-            {
-                _isDarkMode = false;
-            }
+            _isDarkMode = stored == "dark";
             await JS.InvokeVoidAsync("eval", $"document.documentElement.className = '{(_isDarkMode ? "theme-dark" : "theme-light")}'");
             StateHasChanged();
         }

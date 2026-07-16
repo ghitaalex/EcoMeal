@@ -24,3 +24,11 @@
 ::deep .mud-timeline-item .mud-timeline-item-connector {
     background-color: var(--border-color);
 }
+
+@media (max-width: 600px) {
+    ::deep .orders-timeline { margin-left: -0.35rem; }
+    ::deep .orders-timeline .mud-timeline-item-opposite { display: none; }
+    ::deep .orders-timeline .mud-timeline-item-content { padding-right: 0; }
+    ::deep .order-card:hover { transform: none; }
+    ::deep .order-card .mud-stack-row { min-width: 0; }
+}

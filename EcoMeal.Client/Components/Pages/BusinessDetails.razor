@@ -1,6 +1,7 @@
 @page "/business/{Id:int}"
 @using EcoMeal.Client.Services
 @using EcoMeal.Client.Models
+@implements IAsyncDisposable
 
 <PageTitle>@(Business?.Name ?? "Business Details")</PageTitle>
 
@@ -13,7 +14,7 @@
 else
 {
     <MudContainer MaxWidth="MaxWidth.Medium" Class="py-8">
-        <MudPaper Class="pa-8" Elevation="0"
+        <MudPaper Class="business-hero pa-8" Elevation="0"
                   Style="@($"color: #fff; border-radius: 24px; background: {(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "var(--gradient-default)" : $"url('{Business.BusinessImageUrl}') center/cover no-repeat")}; position: relative; overflow: hidden;")">
             <div style="position: absolute; inset: 0; background: var(--gradient-hero);"></div>
             <div style="position: relative; z-index: 1;">
@@ -42,7 +43,43 @@ else
             </div>
         </MudPaper>
 
-        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-8 mb-4">
+        <section class="business-location-section">
+            <div class="business-location-heading">
+                <div>
+                    <span class="location-kicker">Location</span>
+                    <MudText Typo="Typo.h5">Find @Business.Name</MudText>
+                    <MudText Typo="Typo.body2">@Business.Address</MudText>
+                </div>
+                <a class="open-map-link" href="@GoogleMapsUrl" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-google"></i>
+                    Open in Google Maps
+                </a>
+            </div>
+
+            @if (Business.Latitude.HasValue && Business.Longitude.HasValue)
+            {
+                @if (_mapError is not null)
+                {
+                    <div class="business-map-fallback" role="alert">
+                        <MudIcon Icon="@Icons.Material.Outlined.Map" />
+                        <span>@_mapError</span>
+                    </div>
+                }
+                else
+                {
+                    <div id="@_mapElementId" class="detail-business-map" aria-label="Map showing @Business.Name"></div>
+                }
+            }
+            else
+            {
+                <div class="business-map-fallback">
+                    <MudIcon Icon="@Icons.Material.Outlined.LocationOff" />
+                    <span>The map preview is not available yet. You can still open this address in Google Maps.</span>
+                </div>
+            }
+        </section>
+
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="detail-section-heading mt-8 mb-4">
             <MudText Typo="Typo.h5" Style="font-weight: 600; color: var(--accent-text);">Available Packages</MudText>
             <AuthorizeView Roles="Admin">
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
@@ -246,12 +283,21 @@ else
     public required NavigationManager NavigationManager { get; set; }
     [Inject]
     public required ISnackbar Snackbar { get; set; }
+    [Inject]
+    public required IJSRuntime JS { get; set; }
 
+    private readonly string _mapElementId = $"business-detail-map-{Guid.NewGuid():N}";
     private BusinessDetailsModel? Business;
     private List<PackageGetModel>? Packages;
     private List<ReviewGetModel>? Reviews;
     private List<OrderGetModel>? MyBusinessOrders;
     private int? _orderingPackageId;
+    private IJSObjectReference? _mapModule;
+    private string? _mapError;
+
+    private string GoogleMapsUrl => Business is null
+        ? "https://www.google.com/maps"
+        : $"https://www.google.com/maps/search/?api=1&query={Uri.EscapeDataString(Business.Address)}";
 
     protected override async Task OnInitializedAsync()
     {
@@ -264,6 +310,36 @@ else
             MyBusinessOrders = allOrders.Where(o => o.BusinessId == Id).ToList();
         }
         catch { }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || Business is null ||
+            !Business.Latitude.HasValue || !Business.Longitude.HasValue)
+            return;
+
+        try
+        {
+            _mapModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/businessMap.js");
+            var marker = new MapBusinessMarkerModel[]
+            {
+                new()
+                {
+                    Id = Business.Id,
+                    Name = Business.Name,
+                    Address = Business.Address,
+                    BusinessTypeName = Business.BusinessTypeName,
+                    Latitude = Business.Latitude.Value,
+                    Longitude = Business.Longitude.Value,
+                }
+            };
+            await _mapModule.InvokeVoidAsync("renderBusinessMap", _mapElementId, marker, null);
+        }
+        catch (JSException)
+        {
+            _mapError = "The map could not be displayed. Check your internet connection and refresh the page.";
+            StateHasChanged();
+        }
     }
 
     private async Task PlaceOrder(int packageId)
@@ -307,5 +383,20 @@ else
     public void NavigateToEditPackage(int packageId)
     {
         NavigationManager.NavigateTo($"business/{Id}/editPackage/{packageId}");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_mapModule is null)
+            return;
+
+        try
+        {
+            await _mapModule.InvokeVoidAsync("disposeBusinessMap", _mapElementId);
+            await _mapModule.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
     }
 }

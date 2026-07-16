@@ -78,7 +78,13 @@ variable "mailjet_secret_key" {
 }
 
 variable "mailjet_sender_email" {
-  type = string
+  type    = string
+  default = "no-reply@ecomeal.site"
+}
+
+variable "routing_api_key" {
+  type      = string
+  sensitive = true
 }
 
 resource "azurerm_key_vault" "kv" {
@@ -137,6 +143,14 @@ resource "azurerm_key_vault_secret" "mailjet_secret_key" {
   depends_on = [azurerm_key_vault_access_policy.current_user]
 }
 
+resource "azurerm_key_vault_secret" "routing_api_key" {
+  name         = "Routing--ApiKey"
+  value        = var.routing_api_key
+  key_vault_id = azurerm_key_vault.kv.id
+
+  depends_on = [azurerm_key_vault_access_policy.current_user]
+}
+
 resource "azurerm_mssql_firewall_rule" "allow_local" {
   name             = "AllowLocalDev"
   server_id        = azurerm_mssql_server.sql.id
@@ -184,6 +198,7 @@ resource "azurerm_linux_web_app" "app_service" {
     "MailjetApiKey"      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_api_key.versionless_id})"
     "MailjetSecretKey"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_secret_key.versionless_id})"
     "MailjetSenderEmail" = var.mailjet_sender_email
+    "Routing__ApiKey"    = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.routing_api_key.versionless_id})"
   }
 
   connection_string {

@@ -17,6 +17,24 @@ namespace EcoMeal.Client.Services
             return businesses ?? new List<BusinessModel>();
         }
 
+        public async Task<List<DrivingDistanceModel>> GetDrivingDistances(double latitude, double longitude)
+        {
+            try
+            {
+                var location = new { Latitude = latitude, Longitude = longitude };
+                var response = await _http.PostAsJsonAsync("api/business/driving-distances", location);
+                if (!response.IsSuccessStatusCode)
+                    return new List<DrivingDistanceModel>();
+
+                var distances = await response.Content.ReadFromJsonAsync<List<DrivingDistanceModel>>();
+                return distances ?? new List<DrivingDistanceModel>();
+            }
+            catch
+            {
+                return new List<DrivingDistanceModel>();
+            }
+        }
+
         public async Task<(bool Success, string? ErrorMessage)> DeleteAsync(int id)
         {
             var response = await _http.DeleteAsync($"api/business/{id}");

@@ -1,180 +1,198 @@
 .business-card {
-    position: relative;
-    background: var(--bg-surface);
-    border-radius: 20px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 2px 16px var(--card-shadow);
-    border: 1px solid var(--border-color);
+    min-width: 0;
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .business-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 40px rgba(29, 73, 52, 0.2);
+    transform: translateY(-4px);
     border-color: var(--hover-border);
+    box-shadow: var(--shadow-lg);
 }
 
 .card-hero {
     position: relative;
-    padding: 1.5rem;
-    min-height: 180px;
-    display: flex;
-    align-items: flex-end;
-    border-radius: 20px 20px 0 0;
+    min-height: 168px;
+    overflow: hidden;
+    background-position: center;
+    background-size: cover;
 }
 
 .card-hero-overlay {
     position: absolute;
     inset: 0;
-    background: var(--gradient-hero);
-    border-radius: 20px 20px 0 0;
+    background: linear-gradient(180deg, rgba(7, 16, 10, 0.08) 38%, rgba(7, 16, 10, 0.52) 100%);
 }
 
-.card-hero-content {
-    position: relative;
+.business-type-badge,
+.rating-badge {
+    position: absolute;
     z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 8px;
+    font-size: 0.67rem;
+    font-weight: 800;
 }
 
 .business-type-badge {
-    display: inline-block;
-    padding: 0.3rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
+    top: 0.7rem;
+    left: 0.7rem;
+    padding: 0.35rem 0.55rem;
+    color: #fff;
+    background: color-mix(in srgb, var(--accent-dark) 86%, transparent);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    background: rgba(29, 73, 52, 0.35);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(4px);
-    margin-bottom: 0.5rem;
+    backdrop-filter: blur(8px);
+}
+
+.rating-badge {
+    right: 0.65rem;
+    bottom: 0.65rem;
+    gap: 0.3rem;
+    padding: 0.34rem 0.5rem;
+    color: #17211b;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+.rating-badge i { color: #f59e0b; }
+
+.card-content {
+    min-width: 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 0.85rem 0.9rem 0.95rem;
+}
+
+.card-title-row {
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.65rem;
 }
 
 .business-name {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #ffffff;
-    margin: 0 0 0.25rem 0;
-    line-height: 1.3;
-    letter-spacing: -0.3px;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.distance-chip {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.38rem;
+    border-radius: 7px;
+    color: var(--accent-text);
+    background: var(--accent-subtle);
+    font-size: 0.62rem;
+    font-weight: 800;
+    white-space: nowrap;
 }
 
 .business-description {
-    font-size: 0.82rem;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.4;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    margin: 0.32rem 0 0;
     overflow: hidden;
+    color: var(--text-muted);
+    font-size: 0.73rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.hero-details {
+.business-address {
+    min-width: 0;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.75rem;
-}
-
-.hero-chip {
-    display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 10px;
-    font-size: 0.72rem;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(4px);
+    margin: 0.55rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
 }
 
-.hero-chip i {
-    font-size: 0.68rem;
-    color: var(--color-lightest);
-}
-
-.card-content {
-    padding: 1rem 1.5rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
+.business-address i { flex: 0 0 auto; color: var(--accent); }
+.business-address span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .card-package-info {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+    margin-top: 0.65rem;
 }
 
 .package-info-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.82rem;
-    font-weight: 500;
+    gap: 0.3rem;
     color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 700;
 }
 
-.package-info-item i {
-    color: var(--accent);
-    font-size: 0.8rem;
-}
+.package-info-item i { color: var(--accent); font-size: 0.72rem; }
 
 .no-packages-text {
-    font-size: 0.82rem;
+    margin: 0.65rem 0 0;
     color: var(--text-muted);
-    margin: 0;
-    font-style: italic;
+    font-size: 0.7rem;
 }
 
-.no-packages-text i {
-    margin-right: 0.3rem;
-}
+.no-packages-text i { margin-right: 0.25rem; }
 
 .card-actions {
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
     display: flex;
-    gap: 0.5rem;
+    gap: 0.45rem;
+    margin-top: auto;
+    padding-top: 0.8rem;
 }
 
-.btn-edit {
-    background: none;
-    border: 1.5px solid var(--border-color);
-    color: var(--accent);
-    padding: 0.4rem 1rem;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-edit:hover {
-    background: rgba(4, 120, 87, 0.1);
-    border-color: var(--hover-border);
-    color: var(--accent-text);
-}
-
+.btn-edit,
 .btn-delete {
-    background: none;
-    border: 1.5px solid rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    padding: 0.4rem 1rem;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    flex: 1;
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 0.7rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
 }
 
-.btn-delete:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.4);
+.btn-edit { border: 1px solid var(--border-color); color: var(--accent-text); }
+.btn-edit:hover { border-color: var(--accent); background: var(--accent-subtle); }
+.btn-delete { border: 1px solid rgba(239, 68, 68, 0.25); color: #ef4444; }
+.btn-delete:hover { background: rgba(239, 68, 68, 0.08); }
+
+@media (max-width: 600px) {
+    .business-card:hover { transform: none; }
+    .card-hero { min-height: 205px; }
+    .card-content { padding: 0.95rem 1rem 1rem; }
+    .business-name { font-size: 1.08rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .business-card, .category-icon { transition: none; }
 }

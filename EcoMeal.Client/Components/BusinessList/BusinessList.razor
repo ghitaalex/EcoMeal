@@ -1,35 +1,153 @@
 @namespace EcoMeal.Client.Components.BusinessList
 @using EcoMeal.Client.Components.BusinessCard
 @using EcoMeal.Client.Models
-@if (Businesses is null)
+
+@if (_loadError is not null)
 {
-    <p>Loading... </p>
+    <div class="api-error" role="alert">
+        <span class="api-error-icon"><MudIcon Icon="@Icons.Material.Outlined.CloudOff" /></span>
+        <div class="api-error-copy">
+            <span class="section-kicker">Connection unavailable</span>
+            <h2>We couldn't load nearby food</h2>
+            <p>@_loadError Start <code>EcoMeal.Api</code>, then try again.</p>
+        </div>
+        <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Refresh"
+                   Class="retry-btn"
+                   Disabled="@_isRetrying"
+                   OnClick="LoadBusinesses">
+            @(_isRetrying ? "Trying…" : "Try again")
+        </MudButton>
+    </div>
 }
-else {
-    <div class="d-flex align-items-center mb-4">
-        <div class="d-flex flex-wrap gap-3 align-center justify-center flex-grow-1">
-            <MudChip T="string" Icon="@Icons.Material.Filled.AllInclusive" Color="@GetChipColor(null)" Variant="Variant.Filled" Style="@GetChipStyle(null)" OnClick="() => SelectFilter(null)">All</MudChip>
-            @foreach (var type in BusinessTypes)
+else if (Businesses is null)
+{
+    <div class="business-loading" aria-label="Loading businesses">
+        <div class="loading-heading"></div>
+        <div class="loading-grid">
+            @for (var i = 0; i < 6; i++)
             {
-                <MudChip T="string" Icon="@GetIconForType(type)" Color="@GetChipColor(type)" Variant="Variant.Filled" Style="@GetChipStyle(type)" OnClick="() => SelectFilter(type)">@type</MudChip>
+                <div class="loading-card"></div>
             }
         </div>
+    </div>
+}
+else
+{
+    <div class="filter-row" aria-label="Filter businesses by category">
+        <span class="filter-count">
+            @FilteredBusinesses.Count() business@(FilteredBusinesses.Count() == 1 ? "" : "es") available
+        </span>
+        <div class="filter-scroll">
+            <button type="button" class="category-filter @(_selectedType is null ? "active" : null)"
+                    aria-pressed="@(_selectedType is null)" @onclick="() => SelectFilter(null)">
+                <span class="category-icon"><MudIcon Icon="@Icons.Material.Filled.AllInclusive" /></span>
+                <span>All</span>
+            </button>
+            @foreach (var type in BusinessTypes)
+            {
+                <button type="button" class="category-filter @(_selectedType == type ? "active" : null)"
+                        aria-pressed="@(_selectedType == type)" @onclick="() => SelectFilter(type)">
+                    <span class="category-icon"><MudIcon Icon="@GetIconForType(type)" /></span>
+                    <span>@type</span>
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="discover-header">
+        <div>
+            <span class="section-kicker">Fresh finds near you</span>
+            <h2>Discover something delicious</h2>
+        </div>
         <AuthorizeView Roles="Admin">
-            <div class="ms-3">
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add"
-                           Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 700; border-radius: 12px; padding: 0.5rem 1.25rem; box-shadow: var(--glow-sm);"
-                           Href="/business/add">
-                    Add Business
-                </MudButton>
-            </div>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Class="add-business-btn" Href="/business/add">
+                Add business
+            </MudButton>
         </AuthorizeView>
     </div>
-    <div class="row g-3">
-    @foreach(BusinessModel business in FilteredBusinesses)
+
+    <div class="discovery-controls">
+        <div class="location-control">
+            @if (_userLocation is not null)
+            {
+                <span class="location-icon location-active"><MudIcon Icon="@Icons.Material.Filled.MyLocation" /></span>
+                <div>
+                    <strong>Using your location</strong>
+                </div>
+                <button type="button" class="location-refresh" @onclick="RequestLocationAsync" aria-label="Refresh your location">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            }
+            else
+            {
+                <span class="location-icon"><MudIcon Icon="@Icons.Material.Outlined.LocationOn" /></span>
+                <div>
+                    <strong>@(_isLocating ? "Finding your location…" : "See what's closest")</strong>
+                    <span>Allow location access to calculate distance.</span>
+                </div>
+                <button type="button" class="location-button" @onclick="RequestLocationAsync" disabled="@_isLocating">
+                    @(_isLocating ? "Locating…" : "Use my location")
+                </button>
+            }
+        </div>
+
+        <div class="view-toggle" aria-label="Choose business view">
+            <button type="button" class="@(_viewMode == "list" ? "active" : null)" @onclick="@(() => SetViewMode("list"))">
+                <i class="bi bi-grid"></i><span>List</span>
+            </button>
+            <button type="button" class="@(_viewMode == "map" ? "active" : null)" @onclick="@(() => SetViewMode("map"))">
+                <i class="bi bi-map"></i><span>Map</span>
+            </button>
+        </div>
+    </div>
+
+    @if (_locationError is not null)
     {
-        <div class="col-md-4 col-lg-3">
-            <BusinessCard Business="business"/>
+        <div class="location-message" role="status">
+            <MudIcon Icon="@Icons.Material.Outlined.LocationDisabled" />
+            <span>@_locationError</span>
         </div>
     }
-    </div>
+
+    @if (_viewMode == "map")
+    {
+        <div class="map-shell">
+            @if (_mapError is not null)
+            {
+                <div class="map-message" role="alert">
+                    <MudIcon Icon="@Icons.Material.Outlined.Map" />
+                    <p>@_mapError</p>
+                    <button type="button" @onclick="@(() => SetViewMode("map"))">Try again</button>
+                </div>
+            }
+            else
+            {
+                <div id="@_mapElementId" class="business-map" aria-label="Map of EcoMeal businesses"></div>
+                @if (!MappableBusinesses.Any())
+                {
+                    <div class="map-coordinate-notice">
+                        Business locations are being prepared. Refresh shortly to see their markers.
+                    </div>
+                }
+            }
+        </div>
+    }
+    else if (!FilteredBusinesses.Any())
+    {
+        <div class="empty-results">
+            <MudIcon Icon="@Icons.Material.Outlined.SearchOff" />
+            <h3>No places in this category yet</h3>
+            <p>Try another filter to discover more food nearby.</p>
+        </div>
+    }
+    else
+    {
+        <div class="business-grid">
+            @foreach (BusinessModel business in FilteredBusinesses)
+            {
+                <BusinessCard Business="business" />
+            }
+        </div>
+    }
 }

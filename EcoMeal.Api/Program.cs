@@ -17,6 +17,20 @@ builder.Configuration.AddAzureKeyVault(
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddHttpClient<GeocodingService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Geocoding:BaseUrl"] ?? "https://nominatim.openstreetmap.org/");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd(
+        builder.Configuration["Geocoding:UserAgent"] ?? "EcoMeal/1.0");
+    client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("ro,en;q=0.8");
+});
+builder.Services.AddHttpClient<DrivingDistanceService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Routing:BaseUrl"] ?? "https://api.openrouteservice.org/");
+    var apiKey = builder.Configuration["Routing:ApiKey"];
+    if (!string.IsNullOrWhiteSpace(apiKey))
+        client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", apiKey);
+});
 builder.Services.AddDbContext<EcoMealDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     );

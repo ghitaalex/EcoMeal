@@ -6,23 +6,22 @@
 <div class="business-card" @onclick="NavigateToDetails">
     <div class="card-hero" style="@(string.IsNullOrEmpty(Business.BusinessImageUrl) ? "background: var(--gradient-default);" : $"background: url('{Business.BusinessImageUrl}') center/cover no-repeat;")">
         <div class="card-hero-overlay"></div>
-        <div class="card-hero-content">
-            <span class="business-type-badge">@Business.BusinessTypeName</span>
-            <h5 class="business-name">@Business.Name</h5>
-            @if (!string.IsNullOrEmpty(Business.Description))
-            {
-                <p class="business-description">@Business.Description</p>
-            }
-            <div class="hero-details">
-                <span class="hero-chip"><i class="bi bi-geo-alt-fill"></i> @Business.Address</span>
-                <span class="hero-chip"><i class="bi bi-envelope-fill"></i> @Business.Contact</span>
-            </div>
-            <div class="hero-details" style="margin-top: 0.4rem;">
-                <span class="hero-chip"><i class="bi bi-star-fill" style="color: #F59E0B;"></i> @Business.AverageRating.ToString("0.0") (@Business.ReviewCount)</span>
-            </div>
-        </div>
+        <span class="business-type-badge">@Business.BusinessTypeName</span>
+        <span class="rating-badge"><i class="bi bi-star-fill"></i> @Business.AverageRating.ToString("0.0") (@Business.ReviewCount)</span>
     </div>
     <div class="card-content">
+        <div class="card-title-row">
+            <h5 class="business-name">@Business.Name</h5>
+            @if (Business.DistanceKm.HasValue)
+            {
+                <span class="distance-chip"><i class="bi bi-navigation-fill"></i> @FormattedDistance</span>
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(Business.Description))
+        {
+            <p class="business-description">@Business.Description</p>
+        }
+        <p class="business-address"><i class="bi bi-geo-alt"></i><span>@Business.Address</span></p>
         @if (_lowestPrice.HasValue)
         {
             <div class="card-package-info">
@@ -41,7 +40,7 @@
         }
         else
         {
-            <p class="no-packages-text"><i class="bi bi-box-seam"></i> No packages yet — check again later</p>
+            <p class="no-packages-text"><i class="bi bi-box-seam"></i> No packages available yet</p>
         }
         <AuthorizeView Roles="Admin">
             <div class="card-actions">
