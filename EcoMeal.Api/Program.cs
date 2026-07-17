@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddAzureKeyVault(
-    new Uri("https://ecomeal-vault.vault.azure.net/"),
-    new DefaultAzureCredential());
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri("https://ecomeal-vault.vault.azure.net/"),
+        new DefaultAzureCredential());
+}
 
 // Add services to the container.
 
@@ -64,6 +67,7 @@ builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
 builder.Services.AddScoped<BlobStorageService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<PaymentService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -83,6 +87,9 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
+    var context = scope.ServiceProvider.GetRequiredService<EcoMealDbContext>();
+    await context.Database.MigrateAsync();
+
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
     var roles = new[] { UserRoles.Admin, UserRoles.User };
     foreach (var role in roles)

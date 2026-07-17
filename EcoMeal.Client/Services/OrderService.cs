@@ -18,16 +18,43 @@ public class OrderService
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/order", new { PackageId = packageId });
-            if (response.IsSuccessStatusCode)
-                return (true, null);
+            var response = await _httpClient.PostAsJsonAsync("api/order", new
+            {
+                PackageId = packageId,
+                PayWithCard = false
+            });
 
-            var body = await response.Content.ReadAsStringAsync();
-            return (false, $"Status {(int)response.StatusCode}: {body}");
+            return response.IsSuccessStatusCode
+                ? (true, null)
+                : (false, "Could not place the order.");
         }
         catch (Exception ex)
         {
             return (false, ex.Message);
+        }
+    }
+
+    public async Task<(OrderCheckoutModel? Checkout, string? Error)> StartCardCheckoutAsync(int packageId)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/order", new
+            {
+                PackageId = packageId,
+                PayWithCard = true
+            });
+
+            if (!response.IsSuccessStatusCode)
+                return (null, "Could not start Stripe Checkout.");
+
+            var checkout = await response.Content.ReadFromJsonAsync<OrderCheckoutModel>();
+            return string.IsNullOrWhiteSpace(checkout?.CheckoutUrl)
+                ? (null, "Stripe did not return a checkout link.")
+                : (checkout, null);
+        }
+        catch (Exception ex)
+        {
+            return (null, ex.Message);
         }
     }
 

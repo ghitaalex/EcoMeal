@@ -9,5 +9,8 @@
         public Package Package { get; set; }
         public required string Status { get; set; }
         public DateTime Date { get; set; }
+        public decimal TotalAmount { get; set; }
+        public string PaymentStatus { get; set; } = "Pending";
+        public bool StockReserved { get; set; }
     }
 }

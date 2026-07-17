@@ -186,25 +186,46 @@ else
                                     </AuthorizeView>
                                 </MudStack>
                                 <AuthorizeView>
-                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ShoppingCart"
-                                               FullWidth="true" Class="mt-3"
-                                               Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 600; border-radius: 10px; box-shadow: var(--glow-sm);"
-                                               Disabled="@(_orderingPackageId == package.Id || isSoldOut)"
-                                               OnClick="() => PlaceOrder(package.Id)">
-                                        @if (_orderingPackageId == package.Id)
-                                        {
-                                            <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Style="width:16px;height:16px;color:#fff;" Class="me-2" />
-                                            <span>Placing order…</span>
-                                        }
-                                        else if (isSoldOut)
-                                        {
-                                            <span>Sold Out</span>
-                                        }
-                                        else
-                                        {
-                                            <span>Order Now</span>
-                                        }
-                                    </MudButton>
+                                    <MudStack Row="true" Spacing="2" Class="mt-3">
+                                        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ShoppingCart"
+                                                   FullWidth="true"
+                                                   Style="color: var(--accent-light); border-color: var(--accent); text-transform: none; font-weight: 600; border-radius: 10px;"
+                                                   Disabled="@(_orderingPackageId.HasValue || isSoldOut)"
+                                                   OnClick="() => PlaceOrder(package.Id, false)">
+                                            @if (_orderingPackageId == package.Id && !_payingByCard)
+                                            {
+                                                <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Class="me-2" />
+                                                <span>Ordering...</span>
+                                            }
+                                            else if (isSoldOut)
+                                            {
+                                                <span>Sold Out</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Order</span>
+                                            }
+                                        </MudButton>
+                                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Payment"
+                                                   FullWidth="true"
+                                                   Style="background: var(--gradient-primary); color: #fff; text-transform: none; font-weight: 600; border-radius: 10px; box-shadow: var(--glow-sm);"
+                                                   Disabled="@(_orderingPackageId.HasValue || isSoldOut)"
+                                                   OnClick="() => PlaceOrder(package.Id, true)">
+                                            @if (_orderingPackageId == package.Id && _payingByCard)
+                                            {
+                                                <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Style="width:16px;height:16px;color:#fff;" Class="me-2" />
+                                                <span>Opening checkout...</span>
+                                            }
+                                            else if (isSoldOut)
+                                            {
+                                                <span>Sold Out</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Pay by card</span>
+                                            }
+                                        </MudButton>
+                                    </MudStack>
                                 </AuthorizeView>
                             </MudCardContent>
                         </MudCard>
@@ -309,6 +330,7 @@ else
     private List<ReviewGetModel>? Reviews;
     private List<OrderGetModel>? MyBusinessOrders;
     private int? _orderingPackageId;
+    private bool _payingByCard;
     private bool _updatingFavorite;
     private IJSObjectReference? _mapModule;
     private ElementReference _mapElement;
@@ -370,26 +392,46 @@ else
         }
     }
 
-    private async Task PlaceOrder(int packageId)
+    private async Task PlaceOrder(int packageId, bool payWithCard)
     {
         _orderingPackageId = packageId;
+        _payingByCard = payWithCard;
         StateHasChanged();
 
-        var result = await orderService.PlaceOrderAsync(packageId);
-        if (result.Success)
+        try
         {
-            Snackbar.Add("Order placed successfully!", Severity.Success);
-            Packages = await packageService.GetByBusinessId(Id);
-            var allOrders = await orderService.GetMyOrderAsync();
-            MyBusinessOrders = allOrders.Where(o => o.BusinessId == Id).ToList();
-        }
-        else
-        {
-            Snackbar.Add($"Failed to place order: {result.Error}", Severity.Error);
-            Packages = await packageService.GetByBusinessId(Id);
-        }
+            if (payWithCard)
+            {
+                var (checkout, error) = await orderService.StartCardCheckoutAsync(packageId);
+                if (!string.IsNullOrWhiteSpace(checkout?.CheckoutUrl))
+                {
+                    NavigationManager.NavigateTo(checkout.CheckoutUrl, forceLoad: true);
+                    return;
+                }
 
-        _orderingPackageId = null;
+                Snackbar.Add(error ?? "Could not open Stripe Checkout.", Severity.Error);
+            }
+            else
+            {
+                var (success, error) = await orderService.PlaceOrderAsync(packageId);
+                if (success)
+                {
+                    Snackbar.Add("Order placed successfully!", Severity.Success);
+                    Packages = await packageService.GetByBusinessId(Id);
+                    var allOrders = await orderService.GetMyOrderAsync();
+                    MyBusinessOrders = allOrders.Where(o => o.BusinessId == Id).ToList();
+                }
+                else
+                {
+                    Snackbar.Add(error ?? "Could not place the order.", Severity.Error);
+                }
+            }
+        }
+        finally
+        {
+            _orderingPackageId = null;
+            _payingByCard = false;
+        }
     }
 
     private async Task ToggleFavorite()

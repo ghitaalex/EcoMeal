@@ -45,6 +45,10 @@ namespace EcoMeal.Api.Infrastructure
                 .WithMany(p => p.Orders)
                 .HasForeignKey(p => p.PackageId);
 
+            modelBuilder.Entity<Order>()
+                .Property(o => o.TotalAmount)
+                .HasPrecision(18, 2);
+
             modelBuilder.Entity<Package>().HasKey(e => e.Id);
 
             modelBuilder.Entity<Package>()

@@ -1,4 +1,5 @@
-﻿using EcoMeal.Api.Entities;
+using EcoMeal.Api.Constants;
+using EcoMeal.Api.Entities;
 using EcoMeal.Api.Infrastructure;
 using EcoMeal.Api.Models;
 using EcoMeal.Api.Services;
@@ -15,80 +16,87 @@ namespace EcoMeal.Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly EcoMealDbContext _context;
-        private readonly EmailService _emailService;
-        private readonly ILogger<OrderController> _logger;
+        private readonly PaymentService _paymentService;
 
-        public OrderController(
-            EcoMealDbContext context,
-            EmailService emailService,
-            ILogger<OrderController> logger)
+        public OrderController(EcoMealDbContext context, PaymentService paymentService)
         {
             _context = context;
-            _emailService = emailService;
-            _logger = logger;
+            _paymentService = paymentService;
         }
+
         [HttpPost]
-        public async Task<ActionResult<OrderGetDTO>> CreateOrder([FromBody] OrderCreateDTO request) {
+        public async Task<ActionResult<CheckoutSessionDTO>> CreateOrder([FromBody] OrderCreateDTO request)
+        {
+            if (request.PayWithCard && !_paymentService.IsConfigured)
+            {
+                return StatusCode(503, "Stripe is not configured");
+            }
+
             var userId = GetCurrentUserID();
             var user = await _context.Users.FindAsync(userId);
-            var package = await _context.Package.Include(p => p.Business)
+            var package = await _context.Package
+                .Include(p => p.Business)
                 .FirstOrDefaultAsync(p => p.Id == request.PackageId);
 
+            if (user is null)
+            {
+                return Unauthorized();
+            }
             if (package is null)
             {
                 return NotFound("Package not found");
             }
-
             if (package.NoPackages <= 0)
             {
                 return BadRequest("Package not available anymore");
             }
+            if (request.PayWithCard && package.Price < 2)
+            {
+                return BadRequest("The minimum Stripe payment is 2.00 RON");
+            }
 
             package.NoPackages -= 1;
-
             var order = new Order
             {
                 UserId = userId,
-                PackageId = request.PackageId,
-                Status = "Pending",
-                Date = DateTime.UtcNow
+                PackageId = package.Id,
+                Status = request.PayWithCard ? "Placed" : "Pending",
+                Date = DateTime.UtcNow,
+                TotalAmount = package.Price,
+                PaymentStatus = request.PayWithCard ? "Pending" : "Not required",
+                StockReserved = true
             };
+
             _context.Order.Add(order);
             await _context.SaveChangesAsync();
+
+            if (!request.PayWithCard)
+            {
+                await _paymentService.SendConfirmationEmailAsync(order, user, package);
+                return Ok(new CheckoutSessionDTO
+                {
+                    OrderId = order.Id,
+                    Status = order.Status
+                });
+            }
+
             try
             {
-                var body = await _emailService.LoadTemplateAsync("OrderConfirmed", new Dictionary<string, string>
-                    {
-                        { "UserName", user.Name },
-                        { "PackageName", package.Name },
-                        { "BusinessName", package.Business.Name },
-                        { "Price", package.Price.ToString("F2") },
-                        { "PickUpStart", package.PickUpStart.ToString("HH:mm") },
-                        { "PickUpEnd", package.PickUpEnd.ToString("HH:mm") }
-                    });
-
-                await _emailService.SendEmailAsync(user.Email, user.Name, "Your EcoMeal Order is Confirmed! 🎉", body);
+                var session = await _paymentService.CreateCheckoutSessionAsync(order, package, user);
+                return Ok(new CheckoutSessionDTO
+                {
+                    OrderId = order.Id,
+                    Status = order.Status,
+                    CheckoutUrl = session.Url
+                });
             }
-            catch (Exception exception)
+            catch
             {
-                _logger.LogError(
-                    exception,
-                    "Failed to send confirmation email for order {OrderId}",
-                    order.Id);
+                package.NoPackages += 1;
+                _context.Order.Remove(order);
+                await _context.SaveChangesAsync();
+                return StatusCode(502, "Could not start Stripe Checkout");
             }
-
-            return Ok(new OrderGetDTO
-            {
-                Id = order.Id,
-                PackageName = package.Name,
-                Status = order.Status,
-                Price = package.Price,
-                BusinessId = package.BusinessId,
-                BusinessName = package.Business.Name,
-                Date = order.Date,
-                UserName = order.User?.Name,
-                UserContact = order.User?.Contact
-            });
         }
 
         [HttpGet]
@@ -96,38 +104,41 @@ namespace EcoMeal.Api.Controllers
         {
             var userId = GetCurrentUserID();
             var orders = await _context.Order
-                .Where(o =>  o.UserId == userId)
+                .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.Date)
                 .Select(o => new OrderGetDTO
                 {
                     Id = o.Id,
                     Date = o.Date,
                     Status = o.Status,
-                    Price = o.Package.Price,
+                    Price = o.TotalAmount,
                     BusinessId = o.Package.BusinessId,
                     BusinessName = o.Package.Business.Name,
                     PackageName = o.Package.Name,
                     IsReviewed = _context.Review.Any(r => r.OrderId == o.Id),
-                    ReviewRating = _context.Review.Where(r => r.OrderId == o.Id).Select(r => (int?)r.Rating).FirstOrDefault(),
-                    ReviewComment = _context.Review.Where(r => r.OrderId == o.Id).Select(r => r.Comment).FirstOrDefault()
+                    ReviewRating = _context.Review.Where(r => r.OrderId == o.Id)
+                        .Select(r => (int?)r.Rating).FirstOrDefault(),
+                    ReviewComment = _context.Review.Where(r => r.OrderId == o.Id)
+                        .Select(r => r.Comment).FirstOrDefault()
                 }).ToListAsync();
-                
+
             return Ok(orders);
         }
 
         [HttpGet("business/{businessId}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult<List<OrderGetDTO>>> GetOrdersByBusiness(int businessId)
         {
             var orders = await _context.Order
-                .Include(o => o.User)
-                .Where(o => o.Package.BusinessId == businessId)
+                .Where(o => o.Package.BusinessId == businessId &&
+                    (o.PaymentStatus == "Paid" || o.PaymentStatus == "Not required"))
                 .OrderByDescending(o => o.Date)
                 .Select(o => new OrderGetDTO
                 {
                     Id = o.Id,
                     Date = o.Date,
                     Status = o.Status,
-                    Price = o.Package.Price,
+                    Price = o.TotalAmount,
                     BusinessId = o.Package.BusinessId,
                     BusinessName = o.Package.Business.Name,
                     PackageName = o.Package.Name,
@@ -140,45 +151,27 @@ namespace EcoMeal.Api.Controllers
         }
 
         [HttpPut("{id}/status")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<ActionResult> UpdateOrderStatus(int id, [FromBody] string status)
         {
-            var order = await _context.Order
-                .Include(o => o.Package)
-                .FirstOrDefaultAsync(o => o.Id == id);
+            if (status != "Pending" && status != "Completed")
+            {
+                return BadRequest("Only Pending and Completed are supported");
+            }
 
+            var order = await _context.Order.FirstOrDefaultAsync(o => o.Id == id);
             if (order is null)
             {
                 return NotFound();
             }
-
-            var previousStatus = order.Status;
-            var isPreviouslyCancelled = IsCancelledStatus(previousStatus);
-            var isNowCancelled = IsCancelledStatus(status);
-
-            if (!isPreviouslyCancelled && isNowCancelled)
+            if (order.PaymentStatus != "Paid" && order.PaymentStatus != "Not required")
             {
-                order.Package.NoPackages += 1;
-            }
-            else if (isPreviouslyCancelled && !isNowCancelled)
-            {
-                if (order.Package.NoPackages <= 0)
-                {
-                    return BadRequest("Package not available anymore");
-                }
-
-                order.Package.NoPackages -= 1;
+                return BadRequest("The card payment has not been completed");
             }
 
             order.Status = status;
             await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private static bool IsCancelledStatus(string? status)
-        {
-            return string.Equals(status, "Cancelled", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(status, "Canceled", StringComparison.OrdinalIgnoreCase);
         }
 
         private int GetCurrentUserID()

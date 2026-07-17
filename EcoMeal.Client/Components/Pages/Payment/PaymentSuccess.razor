@@ -1,0 +1,18 @@
+@page "/payment/success"
+
+<PageTitle>Payment successful | EcoMeal</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-8">
+    <MudPaper Class="pa-10 d-flex flex-column align-center" Style="text-align: center;">
+        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="MudBlazor.Color.Success"
+                 Style="font-size: 5rem;" />
+        <MudText Typo="Typo.h4" Class="mt-4">Payment successful</MudText>
+        <MudText Typo="Typo.body1" Class="mt-2">
+            Stripe received your payment. EcoMeal will update the order through the webhook.
+        </MudText>
+        <MudButton Variant="Variant.Filled" Color="MudBlazor.Color.Success"
+                   Href="/orders" Class="mt-6">
+            View my orders
+        </MudButton>
+    </MudPaper>
+</MudContainer>

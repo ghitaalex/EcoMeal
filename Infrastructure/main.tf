@@ -87,6 +87,16 @@ variable "routing_api_key" {
   sensitive = true
 }
 
+variable "stripe_secret_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "stripe_webhook_secret" {
+  type      = string
+  sensitive = true
+}
+
 resource "azurerm_key_vault" "kv" {
   name                = "ecomeal-vault"
   location            = azurerm_resource_group.rg.location
@@ -151,6 +161,22 @@ resource "azurerm_key_vault_secret" "routing_api_key" {
   depends_on = [azurerm_key_vault_access_policy.current_user]
 }
 
+resource "azurerm_key_vault_secret" "stripe_secret_key" {
+  name         = "Stripe--SecretKey"
+  value        = var.stripe_secret_key
+  key_vault_id = azurerm_key_vault.kv.id
+
+  depends_on = [azurerm_key_vault_access_policy.current_user]
+}
+
+resource "azurerm_key_vault_secret" "stripe_webhook_secret" {
+  name         = "Stripe--WebhookSecret"
+  value        = var.stripe_webhook_secret
+  key_vault_id = azurerm_key_vault.kv.id
+
+  depends_on = [azurerm_key_vault_access_policy.current_user]
+}
+
 resource "azurerm_mssql_firewall_rule" "allow_local" {
   name             = "AllowLocalDev"
   server_id        = azurerm_mssql_server.sql.id
@@ -195,10 +221,13 @@ resource "azurerm_linux_web_app" "app_service" {
   }
 
   app_settings = {
-    "MailjetApiKey"      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_api_key.versionless_id})"
-    "MailjetSecretKey"   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_secret_key.versionless_id})"
-    "MailjetSenderEmail" = var.mailjet_sender_email
-    "Routing__ApiKey"    = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.routing_api_key.versionless_id})"
+    "MailjetApiKey"         = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_api_key.versionless_id})"
+    "MailjetSecretKey"      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.mailjet_secret_key.versionless_id})"
+    "MailjetSenderEmail"    = var.mailjet_sender_email
+    "Routing__ApiKey"       = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.routing_api_key.versionless_id})"
+    "Stripe__SecretKey"     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.stripe_secret_key.versionless_id})"
+    "Stripe__WebhookSecret" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.stripe_webhook_secret.versionless_id})"
+    "Stripe__ClientBaseUrl" = "https://ecomeal-client.azurewebsites.net"
   }
 
   connection_string {

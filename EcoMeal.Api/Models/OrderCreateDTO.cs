@@ -6,5 +6,6 @@ namespace EcoMeal.Api.Models
     {
         [Required]
         public int PackageId { get; set; }
+        public bool PayWithCard { get; set; }
     }
 }
