@@ -31,7 +31,7 @@ public partial class BusinessList : IAsyncDisposable
         (Businesses ?? []).Select(b => b.BusinessTypeName).Distinct().OrderBy(t => t);
 
     private IEnumerable<BusinessModel> FavoriteBusinesses =>
-        (Businesses ?? []).Where(b => b.IsFavorite);
+        CategoryFilteredBusinesses.Where(b => b.IsFavorite);
 
     private IEnumerable<BusinessModel> CategoryFilteredBusinesses
     {
